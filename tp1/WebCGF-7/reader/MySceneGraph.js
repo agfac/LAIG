@@ -30,6 +30,9 @@ function MySceneGraph(filename, scene) {
 	//Materials
 	this.materials = [];
 
+	//Transformations
+	this.transformations = [];
+
 	this.reader.open('scenes/'+filename, this);  
 }
 
@@ -78,13 +81,17 @@ MySceneGraph.prototype.onXMLReady=function()
 		return;
 	}
 
+	var transformationsError = this.parseTransformations(rootElement);
+	if (transformationsError != null) {
+		this.onXMLError(transformationsError);
+		return;
+	}
+
 	this.loadedOk=true;
 	
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
 	this.scene.onGraphLoaded();
 };
-
-
 
 /*
  * Example of method that parses elements of one block and stores information in a specific data structure
@@ -540,6 +547,9 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 
 MySceneGraph.prototype.parseMaterials = function(rootElement){
 
+	if(rootElement == null)
+		onXMLError("error on materials");
+
 	var materials = rootElement.getElementsByTagName('materials');
 
 	if(materials == null || materials.length == 0){
@@ -655,6 +665,76 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 
 		this.materials[i] = mat;
 	}
+};
+
+MySceneGraph.prototype.parseTransformations = function(rootElement){
+
+	if(rootElement == null)
+		onXMLError("error on transformations");
+
+	var transformations = rootElement.getElementsByTagName('transformations');
+
+	if(transformations == null || transformations.length == 0){
+		onXMLError("transformations element is missing");
+	}
+
+	var numberOfTransformations = transformations[0].children.length;
+
+	if(numberOfTransformations == 0)
+		onXMLError("transformation elements are missing");
+
+	console.log("Number of transformations: " + numberOfTransformations);
+
+	for(var i = 0; i < numberOfTransformations; i++){
+
+		var child = transformations[0].children[i];
+		
+		var ID = this.reader.getString(child, 'id');
+		
+		console.log('Transformation read from file: Id = ' + ID);
+		
+		var translate = child.getElementsByTagName('translate');
+		if(translate[0] != null){
+			translate = translate[0];
+			var translateToApply = [];
+			translateToApply.id = ID;
+			translateToApply.type = "translate";
+			translateToApply.x = this.reader.getFloat(translate,'x');
+			translateToApply.y = this.reader.getFloat(translate,'y');
+			translateToApply.z = this.reader.getFloat(translate,'z');
+			this.transformations.push(translateToApply);
+
+			console.log("Translate: X = " + translateToApply.x + ", Y = " + translateToApply.y + ", Z = " + translateToApply.z);
+		}
+
+		var rotate = child.getElementsByTagName('rotate');
+		if(rotate[0] != null){
+			rotate = rotate[0];
+			var rotateToApply = [];
+			rotateToApply.id = ID;
+			rotateToApply.type = "rotate";
+			rotateToApply.axis = this.reader.getString(rotate,'axis');
+			rotateToApply.angle = this.reader.getFloat(rotate,'angle');
+			this.transformations.push(rotateToApply);
+
+			console.log("Rotate: Axis = " + rotateToApply.axis + ", Angle = " + rotateToApply.angle);
+		}
+
+		var scale = child.getElementsByTagName('scale');
+		if(scale[0] != null){
+			scale = scale[0];
+			var scaleToApply = [];
+			scaleToApply.id = ID;
+			scaleToApply.type = "scale";
+			scaleToApply.x = this.reader.getFloat(scale,'x');
+			scaleToApply.y = this.reader.getFloat(scale,'y');
+			scaleToApply.z = this.reader.getFloat(scale,'z');
+			this.transformations.push(scaleToApply);
+
+			console.log("Scale: X = " + scaleToApply.x + ", Y = " + scaleToApply.y + ", Z = " + scaleToApply.z);
+		}		
+	}
+
 };
 /*
  * Callback to be executed on any read error
