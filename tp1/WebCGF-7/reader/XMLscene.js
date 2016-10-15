@@ -9,7 +9,10 @@ XMLscene.prototype.constructor = XMLscene;
 XMLscene.prototype.init = function (application) {
     CGFscene.prototype.init.call(this, application);
 
+    //Views
     this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
+    this.currentCamera = 0;
+    this.cameras = [];
 
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -18,10 +21,12 @@ XMLscene.prototype.init = function (application) {
     this.gl.enable(this.gl.CULL_FACE);
     this.gl.depthFunc(this.gl.LEQUAL);
 
+    //Axis
     this.axis=new CGFaxis(this);
 
-    this.currentCamera = 0;
-    this.cameras = [];
+    //Lights
+    this.lightsStatus = [];
+    this.lightsIds = [];
 
 };
 

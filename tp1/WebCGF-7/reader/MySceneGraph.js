@@ -24,6 +24,9 @@ function MySceneGraph(filename, scene) {
 	this.omniLights = [];
 	this.spotLights = [];
 
+	//Textures
+	this.textures = [];
+
 	this.reader.open('scenes/'+filename, this);  
 }
 
@@ -60,6 +63,11 @@ MySceneGraph.prototype.onXMLReady=function()
 		return;
 	}	
 		
+	var texturesError = this.parseTextures(rootElement);
+	if (texturesError != null) {
+		this.onXMLError(texturesError);
+		return;
+	}
 
 	this.loadedOk=true;
 	
@@ -132,6 +140,7 @@ MySceneGraph.prototype.parseScene = function(rootElement){
 }
 
 MySceneGraph.prototype.parseViews = function (rootElement){
+	
 	var views = rootElement.getElementsByTagName('views');
 	
 	if(views == null || views.length == 0){
@@ -172,6 +181,7 @@ MySceneGraph.prototype.parseViews = function (rootElement){
 }
 
 MySceneGraph.prototype.parseIllumination = function (rootElement) {
+	
 	var elems = rootElement.getElementsByTagName('illumination');
 
 	if(elems == null){
@@ -213,7 +223,7 @@ MySceneGraph.prototype.parseIllumination = function (rootElement) {
 	this.ambientB = this.reader.getFloat(ambient, 'b');
 	this.ambientA = this.reader.getFloat(ambient, 'a');
 
-	console.log('Illumination read from file: Ambient R = ' + this.ambientR + "Ambient G = " + this.ambientG + "Ambient B = " + this.ambientB + "Ambient A = " + this.ambientA);
+	console.log('Illumination read from file: Ambient R = ' + this.ambientR + " Ambient G = " + this.ambientG + " Ambient B = " + this.ambientB + " Ambient A = " + this.ambientA);
 
 	background = background[0];
 
@@ -222,7 +232,7 @@ MySceneGraph.prototype.parseIllumination = function (rootElement) {
 	this.backgroundB = this.reader.getFloat(background, 'b');
 	this.backgroundA = this.reader.getFloat(background, 'a');
 
-	console.log('Illumination read from file: Background R = ' + this.backgroundR + "Background G = " + this.backgroundG + "Background B = " + this.backgroundB + "Background A = " + this.backgroundA);
+	console.log('Illumination read from file: Background R = ' + this.backgroundR + " Background G = " + this.backgroundG + " Background B = " + this.backgroundB + " Background A = " + this.backgroundA);
 
 }	
 
@@ -472,7 +482,37 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 	this.lightIndex++;
 	spot.update();
 
-}
+};
+
+MySceneGraph.prototype.parseTextures = function(rootElement){
+
+	var textures = rootElement.getElementsByTagName('textures');
+
+	if(textures == null || textures.length == 0){
+		onXMLError("textures element is missing");
+	}
+
+	var numberOfTextures = textures[0].children.length;
+
+	if(numberOfTextures == 0)
+		onXMLError("textures elements are missing");
+
+	for(var i = 0; i < numberOfTextures; i++ ){
+		
+		var child = textures[0].children[i];
+
+		this.textures[i * 4] = this.reader.getString(child, 'id');
+		this.textures[i * 4 + 1] = this.reader.getString(child, 'file');
+		this.textures[i * 4 + 2] = this.reader.getFloat(child, 'length_s');
+		this.textures[i * 4 + 3] = this.reader.getFloat(child, 'length_t');
+		
+		var mat = new CGFappearance(this.scene);
+		mat.loadTexture(this.textures[i * 4 + 1]);
+		this.textures[i] = mat;
+		
+		console.log('Texture read from file: ID = ' + this.textures[i * 4] + ", File = " + this.textures[i * 4 + 1] + ", S_Length = " + this.textures[i * 4 + 2] + ", T_Length = " + this.textures[i * 4 + 3]);
+	}
+};
 
 /*
  * Callback to be executed on any read error
