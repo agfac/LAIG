@@ -69,6 +69,12 @@ MySceneGraph.prototype.onXMLReady=function()
 		return;
 	}
 
+	var materialsError = this.parseMaterials(rootElement);
+	if (materialsError != null) {
+		this.onXMLError(materialsError);
+		return;
+	}
+
 	this.loadedOk=true;
 	
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
@@ -122,6 +128,9 @@ MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
 
 MySceneGraph.prototype.parseScene = function(rootElement){
 
+	if(rootElement == null)
+		onXMLError("error on scene");
+
 	var elems = rootElement.getElementsByTagName('scene');
 	if(elems == null){
 		onXMLError("scene element is missing.");
@@ -141,6 +150,9 @@ MySceneGraph.prototype.parseScene = function(rootElement){
 
 MySceneGraph.prototype.parseViews = function (rootElement){
 	
+	if(rootElement == null)
+		onXMLError("error on views");
+
 	var views = rootElement.getElementsByTagName('views');
 	
 	if(views == null || views.length == 0){
@@ -182,6 +194,9 @@ MySceneGraph.prototype.parseViews = function (rootElement){
 
 MySceneGraph.prototype.parseIllumination = function (rootElement) {
 	
+	if(rootElement == null)
+		onXMLError("error on illumination");
+
 	var elems = rootElement.getElementsByTagName('illumination');
 
 	if(elems == null){
@@ -237,6 +252,9 @@ MySceneGraph.prototype.parseIllumination = function (rootElement) {
 }	
 
 MySceneGraph.prototype.parseLights = function(rootElement){
+
+	if(rootElement == null)
+		onXMLError("error on lights");
 
 	var lights = rootElement.getElementsByTagName('lights');
 
@@ -486,6 +504,9 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 
 MySceneGraph.prototype.parseTextures = function(rootElement){
 
+	if(rootElement == null)
+		onXMLError("error on textures");
+
 	var textures = rootElement.getElementsByTagName('textures');
 
 	if(textures == null || textures.length == 0){
@@ -509,11 +530,119 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 		var mat = new CGFappearance(this.scene);
 		mat.loadTexture(this.textures[i * 4 + 1]);
 		this.textures[i] = mat;
-		
+
 		console.log('Texture read from file: ID = ' + this.textures[i * 4] + ", File = " + this.textures[i * 4 + 1] + ", S_Length = " + this.textures[i * 4 + 2] + ", T_Length = " + this.textures[i * 4 + 3]);
 	}
 };
 
+MySceneGraph.prototype.parseMaterials = function(rootElement){
+
+	var materials = rootElement.getElementsByTagName('materials');
+
+	if(materials == null || materials.length == 0){
+		onXMLError("materials element is missing");
+	}
+
+	var numberOfMaterials = materials[0].children.length;
+
+	if(numberOfMaterials == 0)
+		onXMLError("material elements are missing");
+
+	for(var i = 0; i < numberOfMaterials; i++ ){
+
+		var child = materials[0].children[i];
+
+		var id = this.reader.getString(child, 'id');
+		console.log('Material read from file: Id = ' + id);
+
+		//Emission
+		var emission = child.getElementsByTagName('emission');
+		
+		if(emission == null)
+			onXMLError("emission element on material is missing.")
+
+		if(emission.length != 1)
+			onXMLError("either zero or more than one 'emission' element found.")
+	
+		emission = emission[0];
+
+		var emissionR = this.reader.getFloat(emission, 'r');
+		var emissionG = this.reader.getFloat(emission, 'g');
+		var emissionB = this.reader.getFloat(emission, 'b');
+		var emissionA = this.reader.getFloat(emission, 'a');
+	
+		console.log('Emission read from file: Emission R = ' + emissionR + " Emission G = " + emissionG + " Emission B = " + emissionB + " Emission A = " + emissionA);
+	
+		//Ambient
+		var ambient = child.getElementsByTagName('ambient');
+		
+		if(ambient == null)
+			onXMLError("ambient element on material is missing.")
+
+		if(ambient.length != 1)
+			onXMLError("either zero or more than one 'ambient' element found.")
+	
+		ambient = ambient[0];
+
+		var ambientR = this.reader.getFloat(ambient, 'r');
+		var ambientG = this.reader.getFloat(ambient, 'g');
+		var ambientB = this.reader.getFloat(ambient, 'b');
+		var ambientA = this.reader.getFloat(ambient, 'a');
+	
+		console.log('Ambient read from file: Ambient R = ' + ambientR + " Ambient G = " + ambientG + " Ambient B = " + ambientB + " Ambient A = " + ambientA);
+
+		//Diffuse
+		var diffuse = child.getElementsByTagName('diffuse');
+		
+		if(diffuse == null)
+			onXMLError("diffuse element on material is missing.")
+
+		if(diffuse.length != 1)
+			onXMLError("either zero or more than one 'diffuse' element found.")
+	
+		diffuse = diffuse[0];
+
+		var diffuseR = this.reader.getFloat(diffuse, 'r');
+		var diffuseG = this.reader.getFloat(diffuse, 'g');
+		var diffuseB = this.reader.getFloat(diffuse, 'b');
+		var diffuseA = this.reader.getFloat(diffuse, 'a');
+	
+		console.log('Diffuse read from file: Diffuse R = ' + diffuseR + " Diffuse G = " + diffuseG + " Diffuse B = " + diffuseB + " Diffuse A = " + diffuseA);
+
+		//Specular
+		var specular = child.getElementsByTagName('specular');
+		
+		if(specular == null)
+			onXMLError("specular element on material is missing.")
+
+		if(specular.length != 1)
+			onXMLError("either zero or more than one 'specular' element found.")
+	
+		specular = specular[0];
+
+		var specularR = this.reader.getFloat(specular, 'r');
+		var specularG = this.reader.getFloat(specular, 'g');
+		var specularB = this.reader.getFloat(specular, 'b');
+		var specularA = this.reader.getFloat(specular, 'a');
+	
+		console.log('Specular read from file: Specular R = ' + specularR + " Specular G = " + specularG + " Specular B = " + specularB + " Specular A = " + specularA);
+
+		//Shininess
+		var shininess = child.getElementsByTagName('shininess');
+		
+		if(shininess == null)
+			onXMLError("shininess element on material is missing.")
+
+		if(shininess.length != 1)
+			onXMLError("either zero or more than one 'shininess' element found.")
+	
+		shininess = shininess[0];
+
+		var shininessValue = this.reader.getFloat(shininess, 'value');
+	
+		console.log('Shininess read from file: Shininess Value = ' + shininessValue);
+	}
+};
 /*
  * Callback to be executed on any read error
  */
