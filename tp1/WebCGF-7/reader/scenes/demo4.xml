@@ -16,7 +16,7 @@
 
     <!-- deve definir-se um objeto para raiz do grafo , assim -->
     <!-- como o comprimento dos tres eixos (cilindros) -->
-    <scene root="raiz" axis_length="200.0" />
+    <scene root="raiz" axis_length="2.0" />
 
 
     <views default="vista1" >
@@ -47,7 +47,7 @@
         <!-- Deve existir um ou mais blocos "omni" ou "spot" -->
         <!-- Os identificadores "id" nao podem ser repetidos -->
         <omni id="1" enabled="1" >
-            <location x="2.0" y="3.0" z="3.0" w="1.0" />
+            <location x="2.0" y="2.0" z="3.0" w="1.0" />
             <ambient r="0.8" g="0.8" b="0.8" a="1.0" />
             <diffuse r="0.8" g="0.8" b="0.8" a="1.0" />
             <specular r="0.5" g="0.5" b="0.5" a="1.0" />
@@ -123,10 +123,10 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-            <!-- <rectangle x1="0.0" y1="0.0" x2="2.0" y2="2.0" /> -->
+            <rectangle x1="0.0" y1="0.0" x2="1.0" y2="1.0" />
             <!-- <triangle x1="1.0" y1="2.0" z1="3.0" x2="3.0" y2="3.0" z2="6.0" x3="2.0" y3="4.0" z3="3.0" /> -->
             <!-- <cylinder base="2.0" top="2.0" height="8.0" slices="20" stacks="20" /> -->
-            <sphere radius="2.0" slices="20" stacks="20" />
+            <!-- <sphere radius="2.0" slices="20" stacks="20" /> -->
             <!-- <torus inner="2.9" outer="4.9" slices="20" loops="3" /> -->
 
         </primitive>

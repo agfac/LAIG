@@ -173,6 +173,7 @@ MySceneGraph.prototype.parseViews = function (rootElement){
 		return "views element is missing.";
 
 	var view = views[0];
+
 	this.default = this.reader.getString(view, 'default');
 
 	var numberOfNodes = views[0].children.length;
@@ -278,14 +279,17 @@ MySceneGraph.prototype.parseLights = function(rootElement){
 	if (numberOfNodes == 0)
 		return "there are no ligths";
 
-	//Omni lights
-	var omniLights = light.getElementsByTagName('omni');
-	//Spot lights
-	var spotLights = light.getElementsByTagName('spot');
+	for(var i = 0; i < numberOfNodes; i++){
+		var child = light.children[i];
 
-	this.parseOmniLights(omniLights);
+		console.log(child.tagName);
+		
+		if(child.tagName == "omni")
+			this.parseOmniLights(child);
 
-	//this.parseSpotLights(spotLights);
+		else if(child.tagName == "spot")
+			this.parseSpotLights(child);
+	}
 };
 
 MySceneGraph.prototype.parseOmniLights = function(rootElement){
@@ -293,101 +297,104 @@ MySceneGraph.prototype.parseOmniLights = function(rootElement){
 	if(rootElement == null)
 		return "error on an omni light";
 
-	var numberofOmnis = rootElement.length;
+	var omni = this.scene.lights[this.lightIndex];
+	omni.disable();
+	omni.setVisible(true);
+	console.log("omni " + this.lightIndex);
 
-	var location = [];
-	var ambient = [];
-	var diffuse = []; 
-	var specular = [];
-	var i, id, enable;
+	var id = this.reader.getString(rootElement, 'id');
+	var enabled = this.reader.getBoolean(rootElement, 'enabled');
 
-	for(i = 0; i < numberofOmnis; i++){
+	console.log('Omni Light read from file: Id = ' + id + " Enabled = " + enabled);
 
-		id = this.reader.getString(rootElement[i], 'id');
-		enabled = this.reader.getBoolean(rootElement[i], 'enabled');
+	if(enabled == 1)
+		omni.enable();
 
-		console.log('Omni Light read from file: Id = ' + id + " Enabled = " + enabled);
+	this.lightsOn[this.lightIndex] = enabled;
 
-		var locationTemp = rootElement[i].getElementsByTagName('location');
-		if(locationTemp == null)
-			return "location element on omni light is missing.";
+	var location = rootElement.getElementsByTagName('location');
+	if(location == null)
+		return "location element on omni light is missing.";
 
-		if(locationTemp.length != 1)
-			return "either zero or more than one 'location' element found.";
+	if(location.length != 1)
+		return "either zero or more than one 'location' element found.";
 	
-		locationTemp = locationTemp[0];
+	location = location[0];
 
-		var locationX = this.reader.getFloat(locationTemp, 'x');
-		var locationY = this.reader.getFloat(locationTemp, 'y');
-		var locationZ = this.reader.getFloat(locationTemp, 'z');
-		var locationW = this.reader.getFloat(locationTemp, 'w');
-
-		location.push(locationX, locationY, locationZ, locationW);
-
-		console.log('Omni Light read from file: Location X = ' + locationX + " Location Y = " + locationY + " Location Z = " + locationZ + " Location W = " + locationW);
-
-		var ambientTemp = rootElement[i].getElementsByTagName('ambient');
-		if(ambientTemp == null)
-			return "ambient element on omni light is missing.";
-
-		if(ambientTemp.length != 1)
-			return "either zero or more than one 'ambient' element found.";
+	var locationX = this.reader.getFloat(location, 'x');
+	var locationY = this.reader.getFloat(location, 'y');
+	var locationZ = this.reader.getFloat(location, 'z');
+	var locationW = this.reader.getFloat(location, 'w');
 	
-		ambientTemp = ambientTemp[0];
+	omni.setPosition(locationX,locationY,locationZ,locationW);
 
-		var ambientR = this.reader.getFloat(ambientTemp, 'r');
-		var ambientG = this.reader.getFloat(ambientTemp, 'g');
-		var ambientB = this.reader.getFloat(ambientTemp, 'b');
-		var ambientA = this.reader.getFloat(ambientTemp, 'a');
+	console.log('Omni Light read from file: Location X = ' + locationX + " Location Y = " + locationY + " Location Z = " + locationZ + " Location W = " + locationW);
 
-		ambient.push(ambientR, ambientG, ambientB, ambientA);
+	var ambient = rootElement.getElementsByTagName('ambient');
+	if(ambient == null)
+		return "ambient element on omni light is missing.";
 
-		console.log('Omni Light read from file: Ambient R = ' + ambientR + " Ambient G = " + ambientG + " Ambient B = " + ambientB + " Ambient A = " + ambientA);
+	if(ambient.length != 1)
+		return "either zero or more than one 'ambient' element found.";
+	
+	ambient = ambient[0];
 
-		var diffuseTemp = rootElement[i].getElementsByTagName('diffuse');
-		if(diffuseTemp == null)
-			return "diffuse element on omni light is missing.";
+	var ambientR = this.reader.getFloat(ambient, 'r');
+	var ambientG = this.reader.getFloat(ambient, 'g');
+	var ambientB = this.reader.getFloat(ambient, 'b');
+	var ambientA = this.reader.getFloat(ambient, 'a');
 
-		if(diffuseTemp.length != 1)
-			return "either zero or more than one 'diffuse' element found.";
-		
-		diffuseTemp = diffuseTemp[0];
+	omni.setAmbient(ambientR,ambientG,ambientB,ambientA);
 
-		var diffuseR = this.reader.getFloat(diffuseTemp, 'r');
-		var diffuseG = this.reader.getFloat(diffuseTemp, 'g');
-		var diffuseB = this.reader.getFloat(diffuseTemp, 'b');
-		var diffuseA = this.reader.getFloat(diffuseTemp, 'a');
+	console.log('Omni Light read from file: Ambient R = ' + ambientR + " Ambient G = " + ambientG + " Ambient B = " + ambientB + " Ambient A = " + ambientA);
 
-		diffuse.push(diffuseR, diffuseG, diffuseB, diffuseA);
+	var diffuse = rootElement.getElementsByTagName('diffuse');
+	if(diffuse == null)
+		return "diffuse element on omni light is missing.";
 
-		console.log('Omni Light read from file: Diffuse R = ' + diffuseR + " Diffuse G = " + diffuseG + " Diffuse B = " + diffuseB + " Diffuse A = " + diffuseA);
+	if(diffuse.length != 1)
+		return "either zero or more than one 'diffuse' element found.";
+	
+	diffuse = diffuse[0];
 
-		var specularTemp = rootElement[i].getElementsByTagName('specular');
-		if(specularTemp == null)
-			return "specular element on omni light is missing.";
+	var diffuseR = this.reader.getFloat(diffuse, 'r');
+	var diffuseG = this.reader.getFloat(diffuse, 'g');
+	var diffuseB = this.reader.getFloat(diffuse, 'b');
+	var diffuseA = this.reader.getFloat(diffuse, 'a');
 
-		if(specularTemp.length != 1)
-			return "either zero or more than one 'specular' element found.";
-		
-		specularTemp = specularTemp[0];
+	omni.setDiffuse(diffuseR,diffuseG,diffuseB,diffuseA);
 
-		var specularR = this.reader.getFloat(specularTemp, 'r');
-		var specularG = this.reader.getFloat(specularTemp, 'g');
-		var specularB = this.reader.getFloat(specularTemp, 'b');
-		var specularA = this.reader.getFloat(specularTemp, 'a');
+	console.log('Omni Light read from file: Diffuse R = ' + diffuseR + " Diffuse G = " + diffuseG + " Diffuse B = " + diffuseB + " Diffuse A = " + diffuseA);
 
-		specular.push(specularR, specularG, specularB, specularA);
+	var specular = rootElement.getElementsByTagName('specular');
+	if(specular == null)
+		return "specular element on omni light is missing.";
 
-		console.log('Omni Light read from file: Specular R = ' + specularR + " Specular G = " + specularG + " Specular B = " + specularB + " Specular A = " + specularA);
+	if(specular.length != 1)
+		return "either zero or more than one 'specular' element found.";
+	
+	specular = specular[0];
 
-		this.scene.addOmniLight(id, location, ambient, diffuse, specular, enabled);
-	}
+	var specularR = this.reader.getFloat(specular, 'r');
+	var specularG = this.reader.getFloat(specular, 'g');
+	var specularB = this.reader.getFloat(specular, 'b');
+	var specularA = this.reader.getFloat(specular, 'a');
+
+	omni.setSpecular(specularR,specularG,specularB,specularA);
+
+	console.log('Omni Light read from file: Specular R = ' + specularR + " Specular G = " + specularG + " Specular B = " + specularB + " Specular A = " + specularA);
+
+	this.omniLights[id] = omni;
+
+	this.lightIndex++;
+	omni.update();
+
 };
 
 MySceneGraph.prototype.parseSpotLights = function(rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on an spot light");
+		return "error on an spot light";
 
 	var spot = this.scene.lights[this.lightIndex];
 	spot.disable();
@@ -410,10 +417,10 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 
 	var target = rootElement.getElementsByTagName('target');
 	if(target == null)
-		onXMLError("target element on spot light is missing.")
+		return "target element on spot light is missing.";
 
 	if(target.length != 1)
-		onXMLError("either zero or more than one 'target' element found.")
+		return "either zero or more than one 'target' element found.";
 	
 	target = target[0];
 
@@ -425,10 +432,10 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 
 	var location = rootElement.getElementsByTagName('location');
 	if(location == null)
-		onXMLError("location element on spot light is missing.")
+		return "location element on spot light is missing.";
 
 	if(location.length != 1)
-		onXMLError("either zero or more than one 'location' element found.")
+		return "either zero or more than one 'location' element found.";
 	
 	location = location[0];
 
@@ -446,10 +453,10 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 
 	var ambient = rootElement.getElementsByTagName('ambient');
 	if(ambient == null)
-		onXMLError("ambient element on spot light is missing.")
+		return "ambient element on spot light is missing.";
 
 	if(ambient.length != 1)
-		onXMLError("either zero or more than one 'ambient' element found.")
+		return "either zero or more than one 'ambient' element found.";
 	
 	ambient = ambient[0];
 
@@ -464,10 +471,10 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 
 	var diffuse = rootElement.getElementsByTagName('diffuse');
 	if(diffuse == null)
-		onXMLError("diffuse element on spot light is missing.")
+		return "diffuse element on spot light is missing.";
 
 	if(diffuse.length != 1)
-		onXMLError("either zero or more than one 'diffuse' element found.")
+		return "either zero or more than one 'diffuse' element found.";
 	
 	diffuse = diffuse[0];
 
@@ -482,10 +489,10 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 
 	var specular = rootElement.getElementsByTagName('specular');
 	if(specular == null)
-		onXMLError("specular element on spot light is missing.")
+		return "specular element on spot light is missing.";
 
 	if(specular.length != 1)
-		onXMLError("either zero or more than one 'specular' element found.")
+		return "either zero or more than one 'specular' element found.";
 	
 	specular = specular[0];
 
@@ -508,18 +515,17 @@ MySceneGraph.prototype.parseSpotLights = function(rootElement){
 MySceneGraph.prototype.parseTextures = function(rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on textures");
+		return "error on textures";
 
 	var textures = rootElement.getElementsByTagName('textures');
 
-	if(textures == null || textures.length == 0){
-		onXMLError("textures element is missing");
-	}
+	if(textures == null || textures.length == 0)
+		return "textures element is missing";
 
 	var numberOfTextures = textures[0].children.length;
 
 	if(numberOfTextures == 0)
-		onXMLError("textures elements are missing");
+		return "textures elements are missing";
 
 	for(var i = 0; i < numberOfTextures; i++ ){
 		
@@ -541,18 +547,17 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 MySceneGraph.prototype.parseMaterials = function(rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on materials");
+		return "error on materials";
 
 	var materials = rootElement.getElementsByTagName('materials');
 
-	if(materials == null || materials.length == 0){
-		onXMLError("materials element is missing");
-	}
+	if(materials == null || materials.length == 0)
+		return "materials element is missing";
 
 	var numberOfMaterials = materials[0].children.length;
 
 	if(numberOfMaterials == 0)
-		onXMLError("material elements are missing");
+		return "material elements are missing";
 
 	console.log("Number of materials: " + numberOfMaterials);
 
@@ -568,10 +573,10 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		var emission = child.getElementsByTagName('emission');
 		
 		if(emission == null)
-			onXMLError("emission element on material is missing.")
+			return "emission element on material is missing.";
 
 		if(emission.length != 1)
-			onXMLError("either zero or more than one 'emission' element found.")
+			return "either zero or more than one 'emission' element found.";
 	
 		emission = emission[0];
 
@@ -587,10 +592,10 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		var ambient = child.getElementsByTagName('ambient');
 		
 		if(ambient == null)
-			onXMLError("ambient element on material is missing.")
+			return "ambient element on material is missing.";
 
 		if(ambient.length != 1)
-			onXMLError("either zero or more than one 'ambient' element found.")
+			return "either zero or more than one 'ambient' element found.";
 	
 		ambient = ambient[0];
 
@@ -606,10 +611,10 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		var diffuse = child.getElementsByTagName('diffuse');
 		
 		if(diffuse == null)
-			onXMLError("diffuse element on material is missing.")
+			return "diffuse element on material is missing.";
 
 		if(diffuse.length != 1)
-			onXMLError("either zero or more than one 'diffuse' element found.")
+			return "either zero or more than one 'diffuse' element found.";
 	
 		diffuse = diffuse[0];
 
@@ -625,10 +630,10 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		var specular = child.getElementsByTagName('specular');
 		
 		if(specular == null)
-			onXMLError("specular element on material is missing.")
+			return "specular element on material is missing.";
 
 		if(specular.length != 1)
-			onXMLError("either zero or more than one 'specular' element found.")
+			return "either zero or more than one 'specular' element found.";
 	
 		specular = specular[0];
 
@@ -644,10 +649,10 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 		var shininess = child.getElementsByTagName('shininess');
 		
 		if(shininess == null)
-			onXMLError("shininess element on material is missing.")
+			return "shininess element on material is missing.";
 
 		if(shininess.length != 1)
-			onXMLError("either zero or more than one 'shininess' element found.")
+			return "either zero or more than one 'shininess' element found.";
 	
 		shininess = shininess[0];
 
@@ -663,18 +668,17 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 MySceneGraph.prototype.parseTransformations = function(rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on transformations");
+		return "error on transformations";
 
 	var transformations = rootElement.getElementsByTagName('transformations');
 
-	if(transformations == null || transformations.length == 0){
-		onXMLError("transformations element is missing");
-	}
+	if(transformations == null || transformations.length == 0)
+		return "transformations element is missing";
 
 	var numberOfTransformations = transformations[0].children.length;
 
 	if(numberOfTransformations == 0)
-		onXMLError("transformation elements are missing");
+		return "transformation elements are missing";
 
 	console.log("Number of transformations: " + numberOfTransformations);
 
@@ -727,23 +731,23 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 			console.log("Scale: X = " + scaleToApply.x + ", Y = " + scaleToApply.y + ", Z = " + scaleToApply.z);
 		}		
 	}
+
 };
 
 MySceneGraph.prototype.parsePrimitives = function (rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on primitives");
+		return "error on primitives";
 
 	var primitives = rootElement.getElementsByTagName('primitives');
 
-	if(primitives == null || primitives.length != 1){
-		onXMLError("primitives element is missing or more than one element");
-	}
+	if(primitives == null || primitives.length != 1)
+		return "primitives element is missing or more than one element";
 
 	var numberOfPrimitives = primitives[0].children.length;
 
 	if(numberOfPrimitives == 0)
-		onXMLError("primitives elements are missing");
+		return "primitives elements are missing";
 
 	console.log("Number of primitives: " + numberOfPrimitives);
 
@@ -751,13 +755,11 @@ MySceneGraph.prototype.parsePrimitives = function (rootElement){
 
 		var child = primitives[0].children[i];
 
-		if(child.tagName != 'primitive'){
-			onXMLError("error on primitives: <" + child.tagName + "> instead of <primitive>");
-		}
+		if(child.tagName != 'primitive')
+			return "error on primitives: <" + child.tagName + "> instead of <primitive>";
 
-		if(child.children == null || child.children.length != 1){
-			onXMLError("error on primitives: must be only one primitive");
-		}
+		if(child.children == null || child.children.length != 1)
+			return "error on primitives: must be only one primitive";
 		
 		var ID = this.reader.getString(child,'id');
 		console.log("Primitive id = " + ID);
@@ -858,7 +860,7 @@ MySceneGraph.prototype.parseTorus = function(rootElement){
 MySceneGraph.prototype.parseComponents = function(rootElement){
 
 	if(rootElement == null)
-		return("error on components");
+		return "error on components";
 
 	var firstComponents = rootElement.getElementsByTagName('components');
 
@@ -873,19 +875,17 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 	var numberOfComponents = firstComponents[0].children.length;
 
 	if(numberOfComponents == 0)
-		onXMLError("components elements are missing");
+		return "components elements are missing";
 
 	console.log("Number of components: " + numberOfComponents);
 
 	var components = firstComponents[0].getElementsByTagName('component');
 
-	if (components == null) {
+	if (components == null)
     	return "Component in components missing";
-  	}
 
-  	if (components.length == 0) {
+  	if (components.length == 0)
     	return "components is missing"
-  	}
 
   	for(var i = 0; i < components.length; i++){
   		var component = components[i];
@@ -912,18 +912,18 @@ MySceneGraph.prototype.parseComponent = function(component){
 
 	console.log("Component ID = " + componentID);
 
-	var primitiveTest = this.primitives[id];
+	var primitiveTest = this.primitives[componentID];
   
   	if (primitiveTest != null)
-    	return "Primitive ID " + id + " duplicated";
+    	return "Primitive ID " + componentID + " duplicated";
 
-	var componentTest = this.components[id];
+	var componentTest = this.components[componentID];
   	
   	if (componentTest != null)
-    	return "Node Id" + id + " duplicated";
+    	return "Node Id" + componentID + " duplicated";
 
     var newComponent = new Component();
-  	newComponent.setId(id);
+  	newComponent.setId(componentID);
 
   	//Node local transformations
 
@@ -986,7 +986,6 @@ MySceneGraph.prototype.parseComponent = function(component){
     }
 
     //Node materials
-
     childNode = component.children[1];
 
     if(childNode.nodeName != "materials")
