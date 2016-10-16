@@ -820,7 +820,7 @@ MySceneGraph.prototype.parseRectangle = function (rootElement){
 	return new Rectangle(this.scene, x1, y1, x2, y2);
 };
 
-MySceneGraph.prototype.parseTriangle = function (rootElement){
+MySceneGraph.prototype.parseTriangle = function(rootElement){
 
 	var x1 = this.reader.getFloat(rootElement, 'x1');
 	var y1 = this.reader.getFloat(rootElement, 'y1');
@@ -848,6 +848,18 @@ MySceneGraph.prototype.parseCylinder = function (rootElement){
 	console.log("Cylinder: base = " + base + ", top = " + top + ", height = " + height + ", slices = " + slices + ", stacks = " + stacks);
 
 	return new CylinderWithTops(this.scene, base, top, height, slices, stacks);
+}
+
+MySceneGraph.prototype.parseSphere = function(rootElement){
+
+	var radius = this.reader.getFloat(rootElement, 'radius');
+	var slices = this.reader.getFloat(rootElement, 'slices');
+	var stacks = this.reader.getFloat(rootElement, 'stacks');
+
+	console.log("Sphere: radius = " + radius + ", slices = " + slices + ", stacks = " + stacks);
+
+	return new Sphere(this.scene, radius, slices, stacks);
+
 }
 /*
  * Callback to be executed on any read error
