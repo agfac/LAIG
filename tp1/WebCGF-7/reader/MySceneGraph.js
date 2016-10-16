@@ -807,6 +807,18 @@ MySceneGraph.prototype.parsePrimitives = function (rootElement){
 	}
 
 };
+
+MySceneGraph.prototype.parseRectangle = function(rootElement){
+
+	var x1 = this.reader.getFloat(rootElement, 'x1');
+	var y1 = this.reader.getFloat(rootElement, 'y1');
+	var x2 = this.reader.getFloat(rootElement, 'x2');
+	var y2 = this.reader.getFloat(rootElement, 'y2');
+
+	console.log("Rectangle: x1 = " + x1 + ", y1 = " + y1 + ", x2 = " + x2 + ", y2 = " + y2);
+
+	return new Rectangle(this.scene, x1, y1, x2, y2);
+}
 /*
  * Callback to be executed on any read error
  */
