@@ -1,3 +1,4 @@
+var degToRad = Math.PI / 180.0;
 
 function MySceneGraph(filename, scene) {
 	this.loadedOk = null;
@@ -37,6 +38,9 @@ function MySceneGraph(filename, scene) {
 	this.primitives = [];
 	this.primitivesIDs = [];
 
+	//Components
+	this.components = [];
+
 	this.reader.open('scenes/'+filename, this);  
 }
 
@@ -49,141 +53,129 @@ MySceneGraph.prototype.onXMLReady=function()
 	var rootElement = this.reader.xmlDoc.documentElement;
 	
 	// Here should go the calls for different functions to parse the various blocks
-	var sceneError = this.parseScene(rootElement);
-	if (sceneError != null) {
-		this.onXMLError(sceneError);
-		return;
-	}
+	
+	var error = this.parseGraph(rootElement);
 
-	var viewsError = this.parseViews(rootElement);
-	if (viewsError != null) {
-		this.onXMLError(viewsError);
-		return;
-	}
-
-	var illuminationError = this.parseIllumination(rootElement);
-	if (illuminationError != null) {
-		this.onXMLError(illuminationError);
-		return;
-	}
-
-	var lightsError = this.parseLights(rootElement);
-	if (lightsError != null) {
-		this.onXMLError(lightsError);
-		return;
-	}	
-		
-	var texturesError = this.parseTextures(rootElement);
-	if (texturesError != null) {
-		this.onXMLError(texturesError);
-		return;
-	}
-
-	var materialsError = this.parseMaterials(rootElement);
-	if (materialsError != null) {
-		this.onXMLError(materialsError);
-		return;
-	}
-
-	var transformationsError = this.parseTransformations(rootElement);
-	if (transformationsError != null) {
-		this.onXMLError(transformationsError);
-		return;
-	}
-
-	var primitivesError = this.parsePrimitives(rootElement);
-	if (primitivesError != null) {
-		this.onXMLError(primitivesError);
+	if(error != null){
+		this.onXMLError(error);
 		return;
 	}
 
 	this.loadedOk=true;
+	console.log("Graph loaded correctly!");
 	
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
 	this.scene.onGraphLoaded();
 };
 
 /*
- * Example of method that parses elements of one block and stores information in a specific data structure
+ * Parser of scene
  */
-MySceneGraph.prototype.parseGlobalsExample= function(rootElement) {
+MySceneGraph.prototype.parseGraph = function(rootElement) {
+
+	//DSX file verification
+	if(rootElement.nodeName != "dsx"){
+		return "The scene file isn't a DSX file";
+	}
+
+	//Tags order verification
+	if(rootElement.children[0].nodeName != "scene" || rootElement.children[1].nodeName != "views" || rootElement.children[2].nodeName != "illumination" || rootElement.children[3].nodeName != "lights" || rootElement.children[4].nodeName != "textures" || rootElement.children[5].nodeName != "materials" || rootElement.children[6].nodeName != "transformations" || rootElement.children[7].nodeName != "primitives" || rootElement.children[8].nodeName != "components"){
+		return "Tags order isn't correct";
+	}
+
+	console.log("===== SCENE =====");
+	var sceneError = this.parseScene(rootElement);
+	if (sceneError != null)
+		return sceneError;
 	
-	var elems =  rootElement.getElementsByTagName('globals');
-	if (elems == null) {
-		return "globals element is missing.";
-	}
+	console.log("===== VIEWS =====");
+	var viewsError = this.parseViews(rootElement);
+	if (viewsError != null)
+		return viewsError;
 
-	if (elems.length != 1) {
-		return "either zero or more than one 'globals' element found.";
-	}
+	console.log("===== ILLUMINATION =====");
+	var illuminationError = this.parseIllumination(rootElement);
+	if (illuminationError != null)
+		return illuminationError;
 
-	// various examples of different types of access
-	var globals = elems[0];
-	//this.background = this.reader.getRGBA(globals, 'background');
-	this.drawmode = this.reader.getItem(globals, 'drawmode', ["fill","line","point"]);
-	this.cullface = this.reader.getItem(globals, 'cullface', ["back","front","none", "frontandback"]);
-	this.cullorder = this.reader.getItem(globals, 'cullorder', ["ccw","cw"]);
+	console.log("===== LIGHTS =====");
+	var lightsError = this.parseLights(rootElement);
+	if (lightsError != null)
+		return lightsError;
 
-	console.log("Globals read from file: {background=" + this.background + ", drawmode=" + this.drawmode + ", cullface=" + this.cullface + ", cullorder=" + this.cullorder + "}");
+	console.log("===== TEXTURES =====");
+	var texturesError = this.parseTextures(rootElement);
+	if (texturesError != null)
+		return texturesError;
 
-	var tempList=rootElement.getElementsByTagName('list');
+	console.log("===== MATERIALS =====");
+	var materialsError = this.parseMaterials(rootElement);
+	if (materialsError != null)
+		return materialsError;
 
-	if (tempList == null  || tempList.length==0) {
-		return "list element is missing.";
-	}
-	
-	this.list=[];
-	// iterate over every element
-	var nnodes=tempList[0].children.length;
-	for (var i=0; i< nnodes; i++)
-	{
-		var e=tempList[0].children[i];
+	console.log("===== TRANSFORMATIONS =====");
+	var transformationsError = this.parseTransformations(rootElement);
+	if (transformationsError != null)
+		return transformationsError;
 
-		// process each element and store its information
-		this.list[e.id]=e.attributes.getNamedItem("coords").value;
-		console.log("Read list item id "+ e.id+" with value "+this.list[e.id]);
-	};
+	console.log("===== PRIMITIVES =====");
+	var primitivesError = this.parsePrimitives(rootElement);
+	if (primitivesError != null)
+		return primitivesError;
 
+	// console.log("===== COMPONENTS =====");
+	// var componentsError = this.parseComponents(rootElement);
+	// if (componentsError != null)
+	// 	return componentsError;
+
+	console.log("===== GRAPH =====");
+    console.log(this.graph);
 };
 
 MySceneGraph.prototype.parseScene = function(rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on scene");
+		return "error on scene";
 
+	//Scene
 	var elems = rootElement.getElementsByTagName('scene');
-	if(elems == null){
-		onXMLError("scene element is missing.");
-	}
+	if(elems == null)
+		return "scene element is missing.";
 
-	if(elems.length != 1){
-		onXMLError("either zero or more than one 'scene' element found.");
-	}
+	if(elems.length != 1)
+		return "either zero or more than one 'scene' element found.";
 
 	var scene = elems[0];
 
+	//Root
 	this.root = this.reader.getString(scene, 'root');
+	if(this.root == null)
+		return "Root is missing";
+
+	//Axis_length
 	this.axis_length = this.reader.getFloat(scene, 'axis_length');
+	if(this.axis_length == null)
+		return "Axis_length is missing";
+	if(!this.isNumeric(this.axis_length))
+		return "Axis_length is not numeric";
 
 	console.log("Scene read from file: root = " + this.root + ", axis_length = " + this.axis_length);
-}
+};
 
 MySceneGraph.prototype.parseViews = function (rootElement){
 	
 	if(rootElement == null)
-		onXMLError("error on views");
+		return "error on views";
 
 	var views = rootElement.getElementsByTagName('views');
 	
-	if(views == null || views.length == 0){
-		onXMLError("views element is missing.");
-	}
-
-	var numberOfNodes = views[0].children.length;
+	if(views == null || views.length == 0)
+		return "views element is missing.";
 
 	var view = views[0];
-
 	this.default = this.reader.getString(view, 'default');
+
+	var numberOfNodes = views[0].children.length;
 
 	for (var i = 0; i<numberOfNodes; i++){
 
@@ -210,40 +202,34 @@ MySceneGraph.prototype.parseViews = function (rootElement){
 		console.log("from x = " + this.cameras[i*6 + 4][0] + " y = " + this.cameras[i*6 + 4][1] + " z = " + this.cameras[i*6 + 4][2]);
 		console.log("to x = " + this.cameras[i*6 + 5][0] + " y = " + this.cameras[i*6 + 5][1] + " z = " + this.cameras[i*6 + 5][2]);
 	}
-}
+};
 
 MySceneGraph.prototype.parseIllumination = function (rootElement) {
 	
 	if(rootElement == null)
-		onXMLError("error on illumination");
+		return "error on illumination";
 
 	var elems = rootElement.getElementsByTagName('illumination');
 
-	if(elems == null){
-		onXMLError("illumination element is missing.");
-	}
+	if(elems == null)
+		return "illumination element is missing.";
 
-	if(elems.length != 1){
-		onXMLError("either zero or more than one 'illumination' element found.");
-	}
+	if(elems.length != 1)
+		return "either zero or more than one 'illumination' element found.";
 
 	var ambient = elems[0].getElementsByTagName('ambient');
-	if(ambient == null){
-		onXMLError("ambient element is missing.");
-	}
+	if(ambient == null)
+		return "ambient element is missing.";
 
-	if(ambient.length != 1){
-		onXMLError("either zero or more than one 'ambient' element found.");
-	}
+	if(ambient.length != 1)
+		return "either zero or more than one 'ambient' element found.";
 
 	var background = elems[0].getElementsByTagName('background');
-	if(background == null){
-		onXMLError("background element is missing.");
-	}
+	if(background == null)
+		return "background element is missing.";
 
-	if(background.length != 1){
-		onXMLError("either zero or more than one 'background' element found.");
-	}
+	if(background.length != 1)
+		return "either zero or more than one 'background' element found.";
 
 	elems = elems[0];
 	this.doubleSided = this.reader.getBoolean(elems, 'doublesided');
@@ -258,6 +244,9 @@ MySceneGraph.prototype.parseIllumination = function (rootElement) {
 	this.ambientB = this.reader.getFloat(ambient, 'b');
 	this.ambientA = this.reader.getFloat(ambient, 'a');
 
+	if(!this.isRGBA(this.ambientR, this.ambientG, this.ambientB, this.ambientA))
+		return "ERROR. Ambient values are not RGBA";
+
 	console.log('Illumination read from file: Ambient R = ' + this.ambientR + " Ambient G = " + this.ambientG + " Ambient B = " + this.ambientB + " Ambient A = " + this.ambientA);
 
 	background = background[0];
@@ -267,138 +256,132 @@ MySceneGraph.prototype.parseIllumination = function (rootElement) {
 	this.backgroundB = this.reader.getFloat(background, 'b');
 	this.backgroundA = this.reader.getFloat(background, 'a');
 
-	console.log('Illumination read from file: Background R = ' + this.backgroundR + " Background G = " + this.backgroundG + " Background B = " + this.backgroundB + " Background A = " + this.backgroundA);
+	if(!this.isRGBA(this.backgroundR, this.backgroundG, this.backgroundB, this.backgroundA))
+		return "ERROR. Background values are not RGBA";
 
-}	
+	console.log('Illumination read from file: Background R = ' + this.backgroundR + " Background G = " + this.backgroundG + " Background B = " + this.backgroundB + " Background A = " + this.backgroundA);
+};	
 
 MySceneGraph.prototype.parseLights = function(rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on lights");
+		return "error on lights";
 
 	var lights = rootElement.getElementsByTagName('lights');
 
-	if(lights == null | lights.length == 0){
-		onXMLError("lights element is missing");
-	}
+	if(lights == null || lights.length == 0)
+		return "lights element is missing";
 
 	var light = lights[0];
 	var numberOfNodes = light.children.length;
 
-	if (numberOfNodes == 0){
-		onXMLError("there are no ligths");
-	}
+	if (numberOfNodes == 0)
+		return "there are no ligths";
 
-	for(var i = 0; i < numberOfNodes; i++){
-		var child = light.children[i];
+	//Omni lights
+	var omniLights = light.getElementsByTagName('omni');
+	//Spot lights
+	var spotLights = light.getElementsByTagName('spot');
 
-		console.log(child.tagName);
-		
-		if(child.tagName == "omni")
-			this.parseOmniLights(child);
+	this.parseOmniLights(omniLights);
 
-		else if(child.tagName == "spot")
-			this.parseSpotLights(child);
-	}
+	//this.parseSpotLights(spotLights);
 };
 
 MySceneGraph.prototype.parseOmniLights = function(rootElement){
 
 	if(rootElement == null)
-		onXMLError("error on an omni light");
+		return "error on an omni light";
 
-	var omni = this.scene.lights[this.lightIndex];
-	omni.disable();
-	omni.setVisible(true);
-	console.log("omni " + this.lightIndex);
+	var numberofOmnis = rootElement.length;
 
-	var id = this.reader.getString(rootElement, 'id');
-	var enabled = this.reader.getBoolean(rootElement, 'enabled');
+	var location = [];
+	var ambient = [];
+	var diffuse = []; 
+	var specular = [];
+	var i, id, enable;
 
-	console.log('Omni Light read from file: Id = ' + id + " Enabled = " + enabled);
+	for(i = 0; i < numberofOmnis; i++){
 
-	if(enabled == 1)
-		omni.enable();
+		id = this.reader.getString(rootElement[i], 'id');
+		enabled = this.reader.getBoolean(rootElement[i], 'enabled');
 
-	this.lightsOn[this.lightIndex] = enabled;
+		console.log('Omni Light read from file: Id = ' + id + " Enabled = " + enabled);
 
-	var location = rootElement.getElementsByTagName('location');
-	if(location == null)
-		onXMLError("location element on omni light is missing.")
+		var locationTemp = rootElement[i].getElementsByTagName('location');
+		if(locationTemp == null)
+			return "location element on omni light is missing.";
 
-	if(location.length != 1)
-		onXMLError("either zero or more than one 'location' element found.")
+		if(locationTemp.length != 1)
+			return "either zero or more than one 'location' element found.";
 	
-	location = location[0];
+		locationTemp = locationTemp[0];
 
-	var locationX = this.reader.getFloat(location, 'x');
-	var locationY = this.reader.getFloat(location, 'y');
-	var locationZ = this.reader.getFloat(location, 'z');
-	var locationW = this.reader.getFloat(location, 'w');
+		var locationX = this.reader.getFloat(locationTemp, 'x');
+		var locationY = this.reader.getFloat(locationTemp, 'y');
+		var locationZ = this.reader.getFloat(locationTemp, 'z');
+		var locationW = this.reader.getFloat(locationTemp, 'w');
+
+		location.push(locationX, locationY, locationZ, locationW);
+
+		console.log('Omni Light read from file: Location X = ' + locationX + " Location Y = " + locationY + " Location Z = " + locationZ + " Location W = " + locationW);
+
+		var ambientTemp = rootElement[i].getElementsByTagName('ambient');
+		if(ambientTemp == null)
+			return "ambient element on omni light is missing.";
+
+		if(ambientTemp.length != 1)
+			return "either zero or more than one 'ambient' element found.";
 	
-	omni.setPosition(locationX,locationY,locationZ,locationW);
+		ambientTemp = ambientTemp[0];
 
-	console.log('Omni Light read from file: Location X = ' + locationX + " Location Y = " + locationY + " Location Z = " + locationZ + " Location W = " + locationW);
+		var ambientR = this.reader.getFloat(ambientTemp, 'r');
+		var ambientG = this.reader.getFloat(ambientTemp, 'g');
+		var ambientB = this.reader.getFloat(ambientTemp, 'b');
+		var ambientA = this.reader.getFloat(ambientTemp, 'a');
 
-	var ambient = rootElement.getElementsByTagName('ambient');
-	if(ambient == null)
-		onXMLError("ambient element on omni light is missing.")
+		ambient.push(ambientR, ambientG, ambientB, ambientA);
 
-	if(ambient.length != 1)
-		onXMLError("either zero or more than one 'ambient' element found.")
-	
-	ambient = ambient[0];
+		console.log('Omni Light read from file: Ambient R = ' + ambientR + " Ambient G = " + ambientG + " Ambient B = " + ambientB + " Ambient A = " + ambientA);
 
-	var ambientR = this.reader.getFloat(ambient, 'r');
-	var ambientG = this.reader.getFloat(ambient, 'g');
-	var ambientB = this.reader.getFloat(ambient, 'b');
-	var ambientA = this.reader.getFloat(ambient, 'a');
+		var diffuseTemp = rootElement[i].getElementsByTagName('diffuse');
+		if(diffuseTemp == null)
+			return "diffuse element on omni light is missing.";
 
-	omni.setAmbient(ambientR,ambientG,ambientB,ambientA);
+		if(diffuseTemp.length != 1)
+			return "either zero or more than one 'diffuse' element found.";
+		
+		diffuseTemp = diffuseTemp[0];
 
-	console.log('Omni Light read from file: Ambient R = ' + ambientR + " Ambient G = " + ambientG + " Ambient B = " + ambientB + " Ambient A = " + ambientA);
+		var diffuseR = this.reader.getFloat(diffuseTemp, 'r');
+		var diffuseG = this.reader.getFloat(diffuseTemp, 'g');
+		var diffuseB = this.reader.getFloat(diffuseTemp, 'b');
+		var diffuseA = this.reader.getFloat(diffuseTemp, 'a');
 
-	var diffuse = rootElement.getElementsByTagName('diffuse');
-	if(diffuse == null)
-		onXMLError("diffuse element on omni light is missing.")
+		diffuse.push(diffuseR, diffuseG, diffuseB, diffuseA);
 
-	if(diffuse.length != 1)
-		onXMLError("either zero or more than one 'diffuse' element found.")
-	
-	diffuse = diffuse[0];
+		console.log('Omni Light read from file: Diffuse R = ' + diffuseR + " Diffuse G = " + diffuseG + " Diffuse B = " + diffuseB + " Diffuse A = " + diffuseA);
 
-	var diffuseR = this.reader.getFloat(diffuse, 'r');
-	var diffuseG = this.reader.getFloat(diffuse, 'g');
-	var diffuseB = this.reader.getFloat(diffuse, 'b');
-	var diffuseA = this.reader.getFloat(diffuse, 'a');
+		var specularTemp = rootElement[i].getElementsByTagName('specular');
+		if(specularTemp == null)
+			return "specular element on omni light is missing.";
 
-	omni.setDiffuse(diffuseR,diffuseG,diffuseB,diffuseA);
+		if(specularTemp.length != 1)
+			return "either zero or more than one 'specular' element found.";
+		
+		specularTemp = specularTemp[0];
 
-	console.log('Omni Light read from file: Diffuse R = ' + diffuseR + " Diffuse G = " + diffuseG + " Diffuse B = " + diffuseB + " Diffuse A = " + diffuseA);
+		var specularR = this.reader.getFloat(specularTemp, 'r');
+		var specularG = this.reader.getFloat(specularTemp, 'g');
+		var specularB = this.reader.getFloat(specularTemp, 'b');
+		var specularA = this.reader.getFloat(specularTemp, 'a');
 
-	var specular = rootElement.getElementsByTagName('specular');
-	if(specular == null)
-		onXMLError("specular element on omni light is missing.")
+		specular.push(specularR, specularG, specularB, specularA);
 
-	if(specular.length != 1)
-		onXMLError("either zero or more than one 'specular' element found.")
-	
-	specular = specular[0];
+		console.log('Omni Light read from file: Specular R = ' + specularR + " Specular G = " + specularG + " Specular B = " + specularB + " Specular A = " + specularA);
 
-	var specularR = this.reader.getFloat(specular, 'r');
-	var specularG = this.reader.getFloat(specular, 'g');
-	var specularB = this.reader.getFloat(specular, 'b');
-	var specularA = this.reader.getFloat(specular, 'a');
-
-	omni.setSpecular(specularR,specularG,specularB,specularA);
-
-	console.log('Omni Light read from file: Specular R = ' + specularR + " Specular G = " + specularG + " Specular B = " + specularB + " Specular A = " + specularA);
-
-	this.omniLights[id] = omni;
-
-	this.lightIndex++;
-	omni.update();
-
+		this.scene.addOmniLight(id, location, ambient, diffuse, specular, enabled);
+	}
 };
 
 MySceneGraph.prototype.parseSpotLights = function(rootElement){
@@ -744,7 +727,6 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 			console.log("Scale: X = " + scaleToApply.x + ", Y = " + scaleToApply.y + ", Z = " + scaleToApply.z);
 		}		
 	}
-
 };
 
 MySceneGraph.prototype.parsePrimitives = function (rootElement){
@@ -835,7 +817,7 @@ MySceneGraph.prototype.parseTriangle = function(rootElement){
 	console.log("Triangle: x1 = " + x1 + ", y1 = " + y1 + ", z1 = " + z1 + ", x2 = " + x2 + ", y2 = " + y2 + ", z2 = " + z2 + ", x3 = " + x3 + ", y3 = " + y3 + ", z3 = " + z3);
 
 	return new Triangle(this.scene, x1, y1, z1, x2, y2, z2, x3, y3, z3);
-}
+};
 
 MySceneGraph.prototype.parseCylinder = function (rootElement){
 
@@ -848,23 +830,236 @@ MySceneGraph.prototype.parseCylinder = function (rootElement){
 	console.log("Cylinder: base = " + base + ", top = " + top + ", height = " + height + ", slices = " + slices + ", stacks = " + stacks);
 
 	return new CylinderWithTops(this.scene, base, top, height, slices, stacks);
-}
+};
 
 MySceneGraph.prototype.parseSphere = function(rootElement){
 
 	var radius = this.reader.getFloat(rootElement, 'radius');
-	var slices = this.reader.getFloat(rootElement, 'slices');
-	var stacks = this.reader.getFloat(rootElement, 'stacks');
+	var slices = this.reader.getInteger(rootElement, 'slices');
+	var stacks = this.reader.getInteger(rootElement, 'stacks');
 
 	console.log("Sphere: radius = " + radius + ", slices = " + slices + ", stacks = " + stacks);
 
 	return new Sphere(this.scene, radius, slices, stacks);
+};
 
-}
+MySceneGraph.prototype.parseTorus = function(rootElement){
+
+	var inner = this.reader.getFloat(rootElement, 'inner');
+	var outer = this.reader.getFloat(rootElement, 'outer');
+	var slices = this.reader.getInteger(rootElement, 'slices');
+	var loops = this.reader.getInteger(rootElement, 'loops');
+
+	console.log("Torus: inner = " + inner + ", outer = " + outer + ", slices = " + slices + ", loops = " + loops);
+
+	//return new Torus(this.scene, inner, outer, slices, loops);
+};
+
+MySceneGraph.prototype.parseComponents = function(rootElement){
+
+	if(rootElement == null)
+		return("error on components");
+
+	var firstComponents = rootElement.getElementsByTagName('components');
+
+	if(firstComponents == null){
+		return "components element is missing";
+	}
+
+	if(firstComponents.length != 1){
+		return "Only one component is allowed";
+	}
+
+	var numberOfComponents = firstComponents[0].children.length;
+
+	if(numberOfComponents == 0)
+		onXMLError("components elements are missing");
+
+	console.log("Number of components: " + numberOfComponents);
+
+	var components = firstComponents[0].getElementsByTagName('component');
+
+	if (components == null) {
+    	return "Component in components missing";
+  	}
+
+  	if (components.length == 0) {
+    	return "components is missing"
+  	}
+
+  	for(var i = 0; i < components.length; i++){
+  		var component = components[i];
+
+  		if(error = this.parseComponent(component))
+  			return error;
+  	}
+
+  	if(!(this.scene.root in this.components))
+  		return "Component with root ID missing";
+
+  	for(key in this.components){
+  		for(var i = 0; i < this.components[key].children.length; i++){
+  			var child = this.components[key].children[i];
+  			if(!((child in this.components) || (child in this.graph.primitives)))
+  				return "Child" + child + " is missing";
+  		}
+  	}
+};
+
+MySceneGraph.prototype.parseComponent = function(component){
+
+	var componentID = this.reader.getString(component, 'id');
+
+	console.log("Component ID = " + componentID);
+
+	var primitiveTest = this.primitives[id];
+  
+  	if (primitiveTest != null)
+    	return "Primitive ID " + id + " duplicated";
+
+	var componentTest = this.components[id];
+  	
+  	if (componentTest != null)
+    	return "Node Id" + id + " duplicated";
+
+    var newComponent = new Component();
+  	newComponent.setId(id);
+
+  	//Node local transformations
+
+  	var childNode = component.children[0];
+  	var numberOfChildNodes = childNode.children.length
+  	
+  	for (var i = 0; i < numberOfChildNodes; i++) {
+    	
+    	var transformation = childNode.children[i];
+    	var type = transformation.nodeName;
+
+    	if(childNode.children.length == 1 && type == "transformationref"){
+      		var refID = this.reader.getString(transformation, "id");
+    	}
+    	else{
+    		switch(type){
+
+    			case "rotate":
+    				var axis = this.reader.getString(transformation, 'axis');
+    				var angle = this.reader.getFloat(transformation, 'angle');
+
+    				switch(axis){
+
+    					case "x":
+    						newComponent.rotateOnX(angle * degToRad);
+    						break;
+    					case "y":
+    						newComponent.rotateOnY(angle * degToRad);
+    						break;
+    					case "z":
+    						newComponent.rotateOnZ(angle * degToRad);
+    						break;
+    					default:
+    						return "Error on rotation axis: " + axis;
+    				}
+    			break;
+
+    			case "scale":
+    				var scale_x = this.reader.getFloat(transformation, 'x');
+    				var scale_y = this.reader.getFloat(transformation, 'y');
+    				var scale_z = this.reader.getFloat(transformation, 'z');
+
+    				newComponent.scale(scale_x, scale_y, scale_z);
+
+    			break;
+
+    			case "translate":
+    				var translate_x = this.reader.getFloat(transformation, 'x');
+    				var translate_y = this.reader.getFloat(transformation, 'y');
+    				var translate_z = this.reader.getFloat(transformation, 'z');
+
+    				newComponent.translate(translate_x, translate_y, translate_z);
+
+    			break;
+
+    			default:
+    				return "Error on transformation: " + type;
+    		}
+    	}
+    }
+
+    //Node materials
+
+    childNode = component.children[1];
+
+    if(childNode.nodeName != "materials")
+    	return "ERROR! Expected material in component " + componentID + "in second child instead of < " + childNode.nodeName + " >"; 
+
+    numberOfChildNodes = childNode.children.length
+
+    for(var i = 0; i < numberOfChildNodes; i++){
+
+    	var material = childNode.children[i];
+    	var materialID = this.reader.getString(material, 'id');
+
+    	if(!(materialID in this.materials) && materialID != "inherit")
+    		return "No material " + materialID + " for component ID: " + componentID;
+
+    	if(i==0)
+    		newComponent.setMaterial(material);
+    }
+
+    //Node textures
+    childNode = component.children[2];
+
+    if(childNode.nodeName != "texture")
+    	return "ERROR! Expected texture in node " + componentID + "in third child instead of < " + childNode.nodeName + " >"; 
+
+    var texture = this.reader.getString(childNode, 'id');
+
+    if(!(texture in this.textures) && texture != "null" && texture != "clear")
+    	return "No texture " + texture + " for component ID: " + componentID;
+
+    newComponent.setTexture(texture);
+
+    //Node children
+
+    var new_children = component.children[3];
+
+    if(new_children.nodeName != "children")
+    	return "ERROR! Expected children tag for component ID: " + componentID;
+
+    if(new_children.children.length == 0)
+    	return "Component ID: " + componentID + " has no children";
+
+	numberOfChildNodes = new_children.children.length
+
+    for (var i = 0; i < numberOfChildNodes;i++){
+
+    	var new_child = this.reader.getString(new_children.children[i], 'id');
+    	newComponent.pushChild(new_child);
+    }
+
+    this.components[componentID] = newComponent;
+};
+
 /*
  * Callback to be executed on any read error
  */
  
+MySceneGraph.prototype.isNumeric = function (num){
+
+	if(num==null)
+		return false;
+
+	return !isNaN(parseFloat(num)) && isFinite(num);
+};
+
+MySceneGraph.prototype.isRGBA = function(r, g, b, a){
+
+	if( (r < 0 || r > 1 || isNaN(r)) || (g < 0 || g > 1 || isNaN(g)) || (b < 0 || b > 1 || isNaN(b)) || (a < 0 || a> 1 || isNaN(a))) 
+        return false;
+    else
+    	return true;
+};
+
 MySceneGraph.prototype.onXMLError=function (message) {
 	console.error("XML Loading Error: "+message);	
 	this.loadedOk=false;

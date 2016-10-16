@@ -1,4 +1,5 @@
 
+// Scene constructor
 function XMLscene() {
     CGFscene.call(this);
 }
@@ -6,13 +7,26 @@ function XMLscene() {
 XMLscene.prototype = Object.create(CGFscene.prototype);
 XMLscene.prototype.constructor = XMLscene;
 
+// Scene initialization
 XMLscene.prototype.init = function (application) {
     CGFscene.prototype.init.call(this, application);
+    
+    //Axis
+    this.axis = new CGFaxis(this);
 
     //Views
     this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
     this.currentCamera = 0;
     this.cameras = [];
+
+    //Lights
+    this.lights = [];
+    this.omniLights = [];
+    this.lightsEnabled = [];
+    this.lightsIds = [];
+
+    //Primitives
+    this.primitives = [];
 
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -21,15 +35,10 @@ XMLscene.prototype.init = function (application) {
     this.gl.enable(this.gl.CULL_FACE);
     this.gl.depthFunc(this.gl.LEQUAL);
 
-    //Axis
-    this.axis=new CGFaxis(this);
-
-    //Lights
-    this.lightsStatus = [];
-    this.lightsIds = [];
-
+    this.enableTextures(true);
 };
 
+// Set the interface of the scene
 XMLscene.prototype.setInterface = function (interface) {
     this.interface = interface;
 };
@@ -43,13 +52,21 @@ XMLscene.prototype.initIllumination = function(){
 
 XMLscene.prototype.initLights = function () {
 
-  console.log("Init Lights * Number of Lights: " + this.lights.length);
+  // this.lights[0].setPosition(2, 3, 3, 1);
+  // this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
+  // this.lights[0].update();
 
-  this.lights[0].setPosition(2, 3, 3, 1);
-  this.lights[0].setDiffuse(1.0,1.0,1.0,1.0);
-  this.lights[0].update();
+  for(var i = 0; i < this.omniLights.length; i++){
+    this.lights.push(this.omniLights[i]);
+    this.lights[i].setVisible(true);
+    this.lightsEnabled[this.lights[i].id] = this.lights[i].enabled;
+  }
+
+    console.log("Init Lights * Number of Lights: " + this.lights.length);
+
 };
 
+// Initialization views
 XMLscene.prototype.initCameras = function () {
     //this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
     //console.log(this.graph.cameras);
@@ -60,6 +77,7 @@ XMLscene.prototype.initCameras = function () {
     this.interface.setActiveCamera(this.camera);
 };
 
+// Set default appearance
 XMLscene.prototype.setDefaultAppearance = function () {
     this.setAmbient(0.2, 0.4, 0.8, 1.0);
     this.setDiffuse(0.2, 0.4, 0.8, 1.0);
@@ -76,8 +94,8 @@ XMLscene.prototype.onGraphLoaded = function ()
     this.initCameras();
     this.initIllumination();
     this.initLights();
-    this.lights[0].setVisible(true);
-    this.lights[0].enable();
+    // this.lights[0].setVisible(true);
+    // this.lights[0].enable();
 };
 
 XMLscene.prototype.display = function () {
@@ -94,8 +112,8 @@ XMLscene.prototype.display = function () {
 	// Apply transformations corresponding to the camera position relative to the origin
 	this.applyViewMatrix();
 
-	// Draw axis
-	this.axis.display();
+    // Draw axis
+    this.axis.display();
 
 	this.setDefaultAppearance();
 
@@ -106,8 +124,13 @@ XMLscene.prototype.display = function () {
 	// This is one possible way to do it
 	if (this.graph.loadedOk)
 	{
-		this.lights[0].update();
-	};
+		//this.lights[0].update();
+        //Lights update
+        for(var i = 0; i < this.lights.length; i++)
+            this.lights[i].update;
+
+        console.log("Number of Lights: " + this.lights.length);
+	}
 };
 
 XMLscene.prototype.changeCamera = function()
@@ -118,4 +141,18 @@ XMLscene.prototype.changeCamera = function()
 		this.currentCamera = 0;
 
 	this.camera = this.cameras[this.currentCamera];
+}
+
+XMLscene.prototype.addOmniLight = function (id, location, ambient, diffuse, specular, enable){
+    var omni = new CGFlight(this, id);
+    omni.id = id;
+    omni.setPosition(location);
+    omni.setAmbient(ambient);
+    omni.setDiffuse(diffuse);
+    omni.setSpecular(specular);
+    if(enable)
+        omni.enable();
+    else
+        omni.disable();
+    this.omniLights.push(omni);
 }
