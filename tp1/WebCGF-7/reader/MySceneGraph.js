@@ -33,6 +33,10 @@ function MySceneGraph(filename, scene) {
 	//Transformations
 	this.transformations = [];
 
+	//Primitives
+	this.primitives = [];
+	this.primitivesIDs = [];
+
 	this.reader.open('scenes/'+filename, this);  
 }
 
@@ -84,6 +88,12 @@ MySceneGraph.prototype.onXMLReady=function()
 	var transformationsError = this.parseTransformations(rootElement);
 	if (transformationsError != null) {
 		this.onXMLError(transformationsError);
+		return;
+	}
+
+	var primitivesError = this.parsePrimitives(rootElement);
+	if (primitivesError != null) {
+		this.onXMLError(primitivesError);
 		return;
 	}
 
@@ -733,6 +743,67 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 
 			console.log("Scale: X = " + scaleToApply.x + ", Y = " + scaleToApply.y + ", Z = " + scaleToApply.z);
 		}		
+	}
+
+};
+
+MySceneGraph.prototype.parsePrimitives = function (rootElement){
+
+	if(rootElement == null)
+		onXMLError("error on primitives");
+
+	var primitives = rootElement.getElementsByTagName('primitives');
+
+	if(primitives == null || primitives.length != 1){
+		onXMLError("primitives element is missing or more than one element");
+	}
+
+	var numberOfPrimitives = primitives[0].children.length;
+
+	if(numberOfPrimitives == 0)
+		onXMLError("primitives elements are missing");
+
+	console.log("Number of primitives: " + numberOfPrimitives);
+
+	for(var i = 0; i < numberOfPrimitives; i++){
+
+		var child = primitives[0].children[i];
+
+		if(child.tagName != 'primitive'){
+			onXMLError("error on primitives: <" + child.tagName + "> instead of <primitive>");
+		}
+
+		if(child.children == null || child.children.length != 1){
+			onXMLError("error on primitives: must be only one primitive");
+		}
+		
+		var ID = this.reader.getString(child,'id');
+		console.log("Primitive id = " + ID);
+
+		this.primitivesIDs[i] = ID;
+
+		var primitiveChild = child.children[0];
+		var shape;
+
+		switch(primitiveChild.tagName){
+			case "rectangle":
+				shape = this.parseRectangle(primitiveChild);
+				break;
+			case "triangle":
+				shape = this.parseTriangle(primitiveChild);
+				break;
+			case "cylinder":
+				shape = this.parseCylinder(primitiveChild);
+				break;
+			case "sphere":
+				shape = this.parseSphere(primitiveChild);
+				break;
+			case "torus":
+				shape = this.parseTorus(primitiveChild);
+				break;
+		}
+
+		this.primitives[child.ID] = shape;
 	}
 
 };
