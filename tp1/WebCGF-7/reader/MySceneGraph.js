@@ -808,7 +808,7 @@ MySceneGraph.prototype.parsePrimitives = function (rootElement){
 
 };
 
-MySceneGraph.prototype.parseRectangle = function(rootElement){
+MySceneGraph.prototype.parseRectangle = function (rootElement){
 
 	var x1 = this.reader.getFloat(rootElement, 'x1');
 	var y1 = this.reader.getFloat(rootElement, 'y1');
@@ -818,6 +818,23 @@ MySceneGraph.prototype.parseRectangle = function(rootElement){
 	console.log("Rectangle: x1 = " + x1 + ", y1 = " + y1 + ", x2 = " + x2 + ", y2 = " + y2);
 
 	return new Rectangle(this.scene, x1, y1, x2, y2);
+};
+
+MySceneGraph.prototype.parseTriangle = function (rootElement){
+
+	var x1 = this.reader.getFloat(rootElement, 'x1');
+	var y1 = this.reader.getFloat(rootElement, 'y1');
+	var z1 = this.reader.getFloat(rootElement, 'z1');
+	var x2 = this.reader.getFloat(rootElement, 'x2');
+	var y2 = this.reader.getFloat(rootElement, 'y2');
+	var z2 = this.reader.getFloat(rootElement, 'z2');
+	var x3 = this.reader.getFloat(rootElement, 'x3');
+	var y3 = this.reader.getFloat(rootElement, 'y3');
+	var z3 = this.reader.getFloat(rootElement, 'z3');
+
+	console.log("Triangle: x1 = " + x1 + ", y1 = " + y1 + ", z1 = " + z1 + ", x2 = " + x2 + ", y2 = " + y2 + ", z2 = " + z2 + ", x3 = " + x3 + ", y3 = " + y3 + ", z3 = " + z3);
+
+	return new Triangle(this.scene, x1, y1, z1, x2, y2, z2, x3, y3, z3);
 }
 /*
  * Callback to be executed on any read error
