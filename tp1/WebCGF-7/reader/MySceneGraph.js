@@ -836,6 +836,19 @@ MySceneGraph.prototype.parseTriangle = function (rootElement){
 
 	return new Triangle(this.scene, x1, y1, z1, x2, y2, z2, x3, y3, z3);
 }
+
+MySceneGraph.prototype.parseCylinder = function (rootElement){
+
+	var base = this.reader.getFloat(rootElement, 'base');
+	var top = this.reader.getFloat(rootElement, 'top');
+	var height = this.reader.getFloat(rootElement, 'height');
+	var slices = this.reader.getInteger(rootElement, 'slices');
+	var stacks = this.reader.getInteger(rootElement, 'stacks');
+
+	console.log("Cylinder: base = " + base + ", top = " + top + ", height = " + height + ", slices = " + slices + ", stacks = " + stacks);
+
+	return new CylinderWithTops(this.scene, base, top, height, slices, stacks);
+}
 /*
  * Callback to be executed on any read error
  */
