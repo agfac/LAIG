@@ -16,7 +16,7 @@
 
     <!-- deve definir-se um objeto para raiz do grafo , assim -->
     <!-- como o comprimento dos tres eixos (cilindros) -->
-    <scene root="raiz" axis_length="2.0" />
+    <scene root="root" axis_length="1.0" />
 
 
     <views default="vista1" >
@@ -26,18 +26,26 @@
         <!-- primeira vista; de cada vez que se pressione a tecla v/V, -->
         <!-- a vista muda para a proxima da lista; da -->
         <!-- ultima vista da lista volta 'a primeira -->
-        <perspective id="perspetiva1" near="0.1" far="500" angle="0.4">
-            <from x="15.0" y="15.0" z="15.0" />
-            <to x="0.0" y="0.0" z="0.0" />
+        <perspective id="vista1" near="0.01" far="100.0" angle="45.0">
+            <from x="5.0" y="5.0" z="4.0" />
+            <to x="0.0" y="0.0" z="-0.0" />
+        </perspective>
+        <perspective id="vista2" near="0.01" far="100.0" angle="40.0">
+            <from x="-2.0" y="1.0" z="-0.5" />
+            <to x="1.0" y="1.0" z="-1.0" />
+        </perspective>
+        <perspective id="vista3" near="0.01" far="100.0" angle="45.0">
+            <from x="2.0" y="0.5" z="0.5" />
+            <to x="0.0" y="0.5" z="0.5" />
         </perspective>
 
     </views>
 
 
-    <illumination doublesided="0" local="1" >
+    <illumination doublesided="1" local="1" >
 
-        <ambient r="0.8" g="0.8" b="0.8" a="1.0" />
-        <background r="0.2" g="0.2" b="1.0" a="1.0" />
+        <ambient r="0.1" g="0.1" b="0.1" a="1.0" />
+        <background r="0.1" g="0" b="0.8" a="1.0" />
 
     </illumination>
 
@@ -46,20 +54,27 @@
 
         <!-- Deve existir um ou mais blocos "omni" ou "spot" -->
         <!-- Os identificadores "id" nao podem ser repetidos -->
-        <omni id="1" enabled="1" >
-            <location x="2.0" y="2.0" z="3.0" w="1.0" />
-            <ambient r="0.8" g="0.8" b="0.8" a="1.0" />
-            <diffuse r="0.8" g="0.8" b="0.8" a="1.0" />
-            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+        <omni id="omni1" enabled="0" >
+            <location x="0.0" y="1.0" z="-8.0" w="1.0" />
+            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
+            <specular r="0.0" g="0.0" b="0.0" a="1.0" />
         </omni>
 
-        <spot id="2" enabled="1" angle="0.0" exponent="1.0">
+        <omni id="omni2" enabled="1" >
+            <location x="0.0" y="2.0" z="0.0" w="1.0" />
+            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
+            <specular r="0.0" g="0.0" b="0.0" a="1.0" />
+        </omni>
+
+        <spot id="spot1" enabled="1" angle="2" exponent="1">
             <!-- atencao, "target" e' diferente de "direction" -->
-            <target x="2.0" y="2.0" z="2.0" />
-            <location x="0.0" y="0.0" z="0.0" />
-            <ambient r="0.8" g="0.8" b="0.8" a="1.0" />
-            <diffuse r="0.8" g="0.8" b="0.8" a="1.0" />
-            <specular r="0.8" g="0.8" b="0.8" a="1.0" />
+            <target x="0.0" y="0.0" z="0.0" />
+            <location x="15.0" y="0.0" z="0.0" />
+            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
+            <specular r="0.0" g="0.0" b="0.0" a="1.0" />
         </spot>
     </lights>
 
@@ -78,7 +93,7 @@
         <!-- objetos respetivos podem a violar esta regra.         -->
         <!-- Nao necessario aplicar fatores de escala em  -->
         <!-- quadricas (esfera, ciclindro...) -->
-        <texture id="texture1" file="floor.png" length_s="2.0" length_t="1.0" />
+        <texture id="texture1" file="scenes/textures/floor.png" length_s="8.0" length_t="1.0" />
 
     </textures>
 
@@ -87,11 +102,53 @@
 
         <!-- Deve existir um ou mais blocos "material" -->
         <!-- Os identificadores "id" nao podem ser repetidos -->
-        <material id="mateiral1" >
-            <emission r="0.8" g="0.8" b="0.8" a="1.0" />
-            <ambient r="0.8" g="0.8" b="0.8" a="1.0" />
-            <diffuse r="0.8" g="0.8" b="0.8" a="1.0" />
-            <specular r="0.8" g="0.8" b="0.8" a="1.0" />
+        <material id="material1" >
+            <emission r="0.1" g="0.1" b="0.1" a="1.0" />
+            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
+            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+            <shininess value="1.0" />
+        </material>
+        <material id="material2" >
+            <emission r="0.5" g="0.5" b="0.5" a="1.0" />
+            <ambient r="0.4" g="0.4" b="0.4" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
+            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+            <shininess value="1.0" />
+        </material>
+        <material id="material3" >
+            <emission r="0.0" g="0.3" b="0.1" a="1.0" />
+            <ambient r="1.0" g="0.1" b="0.5" a="1.0" />
+            <diffuse r="0.0" g="0.1" b="1.0" a="1.0" />
+            <specular r="0.0" g="0.5" b="0.5" a="1.0" />
+            <shininess value="1.0" />
+        </material>
+        <material id="material4" >
+            <emission r="0.0" g="0.0" b="0.0" a="1.0" />
+            <ambient r="0.1" g="0.1" b="0.1" a="1.0" />
+            <diffuse r="0.7" g="0.7" b="0.7" a="1.0" />
+            <specular r="0.0" g="0.0" b="0.0" a="1.0" />
+            <shininess value="1.0" />
+        </material>
+        <material id="material5" >
+            <emission r="0.0" g="0.0" b="0.0" a="1.0" />
+            <ambient r="0.1" g="0.1" b="0.1" a="1.0" />
+            <diffuse r="0.1" g="0.1" b="0.1" a="1.0" />
+            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+            <shininess value="1.0" />
+        </material>
+        <material id="material6" >
+            <emission r="1.0" g="1.0" b="0.0" a="1.0" />
+            <ambient r="0.1" g="0.1" b="0.0" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="0.0" a="1.0" />
+            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+            <shininess value="1.0" />
+        </material>
+        <material id="material7" >
+            <emission r="0.0" g="0.0" b="0.0" a="1.0" />
+            <ambient r="0.1" g="0.1" b="0.1" a="1.0" />
+            <diffuse r="0.85" g="0.51" b="0.54" a="1.0" />
+            <specular r="0.0" g="0.0" b="0.0" a="1.0" />
             <shininess value="1.0" />
         </material>
 
@@ -105,7 +162,7 @@
         <transformation id="transformation1">
            <!-- instrucoes a usar sem limite nem ordem -->
            <!-- deve existir pelo menos uma transformacao -->
-           <translate x="1.0" y="1.0" z="1.0" />
+           <translate x="0.0" y="0.0" z="0.0" />
            <rotate axis="x" angle="0.0" />
            <scale x="1.0" y="1.0" z="1.0" />
         </transformation>
@@ -123,7 +180,7 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-            <rectangle x1="0.0" y1="0.0" x2="1.0" y2="1.0" />
+            <rectangle x1="0.0" y1="0.0" x2="2.0" y2="2.0" />
             <!-- <triangle x1="1.0" y1="2.0" z1="3.0" x2="3.0" y2="3.0" z2="6.0" x3="2.0" y3="4.0" z3="3.0" /> -->
             <!-- <cylinder base="2.0" top="2.0" height="8.0" slices="20" stacks="20" /> -->
             <!-- <sphere radius="2.0" slices="20" stacks="20" /> -->
@@ -136,7 +193,7 @@
 
     <components>
 
-        <component id="component1">
+        <component id="root">
 
             <!-- bloco "transformation" obrigatorio -->
             <transformation>
@@ -161,7 +218,7 @@
             <!-- o material muda para o proximo material da lista; do -->
             <!-- ultimo material da lista volta ao primeiro -->
             <materials>
-                <material id="inherit" />
+                <material id="material1" />
             </materials>
 
             <!-- declaracao obrigatoria de texture -->
@@ -169,7 +226,7 @@
             <!-- id="none" remove a textura recebida do pai -->
             <!-- a textura declarada sobrepoe a textura recebida do -->
             <!-- objecto "pai" -->
-            <texture id="inherit" />
+            <texture id="texture1" />
 
             <!-- bloco "children" obrigatorio num "component" -->
             <children>

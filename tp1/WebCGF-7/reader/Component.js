@@ -1,80 +1,97 @@
-function Component(){
+function Component(scene){
 
-	this.id;
-	this.material = [];
-	this.texture;
-	this.transformationRef = [];
-	this.localTransformations = mat4.create();
-	mat4.identify(this.localTransformations);
-	this.children = [];
-	this.primitivesRef = [];
-	this.componentsRef = [];
+	CGFobject.call(this, scene);
+
+	this.scene = scene;
+
+	//Id
+	this.id = "";
+
+	//Texture
+	this.texture = "none";
+
+	//Materials
+	this.material = null;
+	this.materials = [];
+	this.indexMaterial = 0;
+	this.materialChanged = false;
+
+	//Transformations
+	this.matrix = [1.0, 0.0, 0.0, 0.0,
+                   0.0, 1.0, 0.0, 0.0,
+                   0.0, 0.0, 1.0, 0.0,
+                   0.0, 0.0, 0.0, 1.0];
+
+	//Primitives
+	this.primitives = [];
+
+	//PrimitivesRefs
+	this.primitivesID = [];
+
+	//Components
+	this.components = [];
+
+	//ComponentsRefs
+	this.componentsID = [];
 };
 
-Component.prototype = Object.create(Object.prototype);
+Component.prototype = Object.create(CGFobject.prototype);
 Component.prototype.constructor = Component;
 
-//Set id node
-Component.prototype.setId = function(id){
-	this.id = id;
+Component.prototype.display = function(material, texture){
+
+	this.scene.pushMatrix();
+	this.scene.multMatrix(this.matrix);
+
+	var mat = this.material;
+
+	if(this.material == "inherit")
+		mat = material;
+
+	var tex = this.texture;
+	switch(tex){
+		case "none":
+			tex = null;
+			break;
+		case "inherit":
+			tex = texture;
+			break;
+	}
+
+	for(var i = 0; i < this.components.length; i++){
+		if(tex != null)
+			mat.setTexture(tex.texFile)
+		else
+			mat.setTexture(tex);
+		mat.apply();
+
+		if(this.components[i] != null)
+			this.components[i].display(mat,tex);
+	}
+
+	if(tex != null)
+		mat.setTexture(tex.texFile);
+	else
+		mat.setTexture(tex);
+	mat.apply();
+
+	for(var i = 0; i < this.primitives.length; i++){
+		if(tex != null)
+			if(this.primitives[i].updateTexCoords != null)
+				this.primitives[i].updateTexCoords(tex.length_s, tex.length_t);
+
+		this.primitives[i].display(null, null);
+	}
+
+	this.scene.popMatrix();
 };
 
-// Set material node
-Component.prototype.setMaterial = function(material){
-	this.material = material;
-};
+Component.prototype.changeMaterial = function(){
 
-// Set texture node
-Component.prototype.setTexture = function(texture){
-	this.texture = texture;
-};
+	if(this.indexMaterial < this.materials.length - 1)
+		this.indexMaterial++;
+	else
+		this.indexMaterial = 0;
 
-// Add child to node
-Component.prototype.pushChild = function(child){
-	this.children.push(child);
-};
-
-// Applies a rotation on X axis
-Component.prototype.rotateOnX = function(rad){
-	mat4.rotateOnX(this.localTransformations, this.localTransformations, rad);
-};
-
-// Applies a rotation on Y axis
-Component.prototype.rotateOnY = function(rad){
-	mat4.rotateOnY(this.localTransformations, this.localTransformations, rad);
-};
-
-// Applies a rotation on Z axis
-Component.prototype.rotateOnZ = function(rad){
-	mat4.rotateOnZ(this.localTransformations, this.localTransformations, rad);
-};
-
-// Applies a scale to node
-Component.prototype.scale = function(x, y, z){
-	mat4.scale(this.localTransformations, this.localTransformations, vec3.fromValues(x,y,z));
-};
-
-// Applies a translation to node
-Component.prototype.translate = function(x, y, z){
-	mat4.translate(this.localTransformations, this.localTransformations, vec3.fromValues(x,y,z));
-};
-
-// Add primitiveRef
-Component.prototype.addPrimitiveRef = function(primitiveRef){
-	this.primitivesRef.push(primitiveRef);
-};
-
-// Set primitiveRef
-Component.prototype.setPrimitivesRefs = function (primitivesRef) {
-    this.primitivesRef = primitivesRef;
-};
-
-// Add componentRef
-Component.prototype.addComponentRef = function(componentRef){
-	this.componentsRef.push(componentRef);
-};
-
-// Set componentRef
-Component.prototype.setComponentsRefs = function (componentsRef) {
-    this.componentsRef = componentsRef;
+	this.material = this.materials[this.indexMaterial];
 };
