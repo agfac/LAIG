@@ -83,23 +83,23 @@ Torus.prototype.createQuad = function( index, slices){
 	for(var i = 0; i < slices; i++){
 
 		if(i == slices - 1){
-			this.indices.push(index  + slices);
-			this.indices.push(index	 + i				);
-			this.indices.push(index  + i + slices		);
+			this.indices.push(index + slices);
+			this.indices.push(index	+ i);
+			this.indices.push(index + i + slices);
 
-			this.indices.push(index );
-			this.indices.push(index  + i				);
-			this.indices.push(index  + slices	);
+			this.indices.push(index);
+			this.indices.push(index + i);
+			this.indices.push(index + slices);
 		}else{
 
-			this.indices.push(index	 + i				);
-			this.indices.push(index  + i + slices		);
-			this.indices.push(index  + i + slices + 1	);
+			this.indices.push(index	+ i);
+			this.indices.push(index + i + slices);
+			this.indices.push(index + i + slices + 1);
 
 
-			this.indices.push(index  + i + 1			);
-			this.indices.push(index  + i				);
-			this.indices.push(index  + i + slices + 1	);
+			this.indices.push(index + i + 1);
+			this.indices.push(index + i);
+			this.indices.push(index + i + slices + 1);
 		}
 	}
 };
@@ -109,28 +109,27 @@ Torus.prototype.createQuad2 = function( index1, slices, index2){
 	for(var i = 0; i < slices; i++){
 
 		if(i == slices - 1){
-			this.indices.push(index1 + i				);
-			this.indices.push(index2 + i	);
+			this.indices.push(index1 + i);
+			this.indices.push(index2 + i);
 			this.indices.push(index2);
 
 
-			this.indices.push(index1  + i				);
+			this.indices.push(index1 + i);
 			this.indices.push(index2);
 			this.indices.push(index1);
 		}else{
 
-			this.indices.push(index1 + i		);
-			this.indices.push(index2 + i		);
-			this.indices.push(index2 + i + 1	);
+			this.indices.push(index1 + i);
+			this.indices.push(index2 + i);
+			this.indices.push(index2 + i + 1);
 
-			this.indices.push(index1  + i				);
-			this.indices.push(index2  + i + 1	);
-			this.indices.push(index1  + i + 1			);
+			this.indices.push(index1 + i);
+			this.indices.push(index2 + i + 1);
+			this.indices.push(index1 + i + 1);
 
 		}
 	}
 };
-
 
 Torus.prototype.initBuffers = function () {
 	this.vertices = [];
@@ -150,7 +149,7 @@ Torus.prototype.initBuffers = function () {
 		var position = this.innerRadius;
 		var diameter = this.length;
 		var angle = incrAngleR * i;
-		console.log("___________________angle:" + angle);
+		console.log("angle:" + angle);
 		this.drawCircle(position,diameter, angle, this.slices, incrAngleV, i/this.loop);
 
 		if( i < this.loop - 1){
@@ -163,7 +162,7 @@ Torus.prototype.initBuffers = function () {
 		}
 
 	}
-	console.log("__________________LENGTHS__________________");
+	console.log("LENGTHS");
 
 	console.log(this.vertices.length/3);
 	console.log(this.normals.length /3);
