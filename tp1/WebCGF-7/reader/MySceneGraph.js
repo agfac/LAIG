@@ -336,7 +336,7 @@ MySceneGraph.prototype.parseOmniLights = function(element){
 	var specular = this.getRGBAFromElement(element.getElementsByTagName("specular")[0]);
 	omni.setSpecular(specular.r,specular.g,specular.b,specular.a);
 
-	//Check erro (TODO)
+	//Check error
 	console.log("Omni Added: id: " + omni.id + " enable : " + enable + " location: " + this.printVectorXYZ(location) + " ambient: " + this.printRGBA(ambient) + " diffuse: " + this.printRGBA(diffuse) + " specular: " + this.printRGBA(specular));
 
 	this.lightsIDs.push(element.id);
@@ -403,7 +403,7 @@ MySceneGraph.prototype.parseSpotLights = function(element){
 	var specular = this.getRGBAFromElement(element.getElementsByTagName("specular")[0]);
 	spot.setSpecular(specular.r,specular.g,specular.b,specular.a);
 
-	//Check erro (TODO)
+	//Check error
 	console.log("Spot Added: id: " + spot.id + " enable : " + enable + " angle: " + angle + " exponent: " + exponent + " target: " +  this.printVectorXYZ(target) + " location: " + this.printVectorXYZ(location) + " ambient: " + this.printRGBA(ambient) + " diffuse: " + this.printRGBA(diffuse) + " specular: " + this.printRGBA(specular));
 
 	this.lightsIDs.push(element.id);
