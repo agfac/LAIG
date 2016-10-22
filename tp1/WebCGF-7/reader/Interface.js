@@ -41,7 +41,7 @@ Interface.prototype.processKeyDown = function(event){
 				this.scene.graph.changeMaterials();
 				break;
 			case (86): // Key V
-				this.scene.nextCamera();
+				this.scene.getNextCamera();
 				break;
 	};
 };

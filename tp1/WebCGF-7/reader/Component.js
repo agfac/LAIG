@@ -17,10 +17,7 @@ function Component(scene){
 	this.materialChanged = false;
 
 	//Transformations
-	this.matrix = [1.0, 0.0, 0.0, 0.0,
-                   0.0, 1.0, 0.0, 0.0,
-                   0.0, 0.0, 1.0, 0.0,
-                   0.0, 0.0, 0.0, 1.0];
+	this.matrix = mat4.create();
 
 	//Primitives
 	this.primitives = [];

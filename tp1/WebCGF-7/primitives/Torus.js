@@ -41,14 +41,8 @@ Torus.prototype.drawCircle = function( positionX, diameter, angle, slices, incrA
 
 	for(var i = 0; i < slices; i ++){
 
-		var matrix = [	1, 0, 0, 0,
-				 	0, 1, 0, 0,
-				 	0, 0, 1, 0,
-				 	0, 0, 0, 1];
-		var matrix2 = [	1, 0, 0, 0,
-				 	0, 1, 0, 0,
-				 	0, 0, 1, 0,
-				 	0, 0, 0, 1];
+		var matrix = mat4.create();
+		var matrix2 = mat4.create();
 
 		var position3 = [0, Math.cos(incrAngle * i)* radius,  Math.sin(incrAngle * i) * radius];
 		mat4.rotate(matrix,matrix, angle, [0,0,1]);
