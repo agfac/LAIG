@@ -107,6 +107,8 @@
         <texture id="textures_wallpaper" file="scenes/textures/wallpaper.jpg" length_s="1.0" length_t="1.0" />
         <texture id="textures_wallpaper2" file="scenes/textures/5.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_chair" file="scenes/textures/chair.jpg" length_s="1.0" length_t="1.0" />
+        <texture id="texture_torus_light" file="scenes/textures/torus_light.jpg" length_s="1.0" length_t="1.0" /> 
+        <texture id="texture_torus_light2" file="scenes/textures/torus_light2.jpg" length_s="1.0" length_t="1.0" />
     </textures>
 
 
@@ -114,15 +116,22 @@
 
         <!-- Deve existir um ou mais blocos "material" -->
         <!-- Os identificadores "id" nao podem ser repetidos -->
+        <material id="material1" >
+            <emission r="1" g="1" b="1" a="1.0" />
+            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
+            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+            <shininess value="1.0" />
+        </material>
         <material id="material_wall" >
-            <emission r="0.8" g="0.8" b="0.8" a="1.0" />
+            <emission r="0.5" g="0.5" b="0.5" a="1.0" />
             <ambient r="1.0" g="1.0" b="1.0" a="1.0" />
             <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
             <specular r="1.0" g="1.0" b="1.0" a="1.0" />
             <shininess value="1.0" />
         </material>
         <material id="material_floor" >
-            <emission r="0.5" g="0.5" b="0.5" a="1.0" />
+            <emission r="0.3" g="0.3" b="0.3" a="1.0" />
             <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
             <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
             <specular r="0.5" g="0.5" b="0.5" a="1.0" />
@@ -133,13 +142,6 @@
             <ambient r="1.0" g="1.0" b="1.0" a="1.0" />
             <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
             <specular r="1.0" g="1.0" b="1.0" a="1.0" />
-            <shininess value="1.0" />
-        </material>
-         <material id="material1" >
-            <emission r="1" g="1" b="1" a="1.0" />
-            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
-            <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
-            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
             <shininess value="1.0" />
         </material>
         <material id="material_gray" >
@@ -232,9 +234,8 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-             <torus inner="0.5" outer="1.0" slices="100" loops="30" /> 
+             <torus inner="0.5" outer="1.0" slices="100" loops="50" /> 
         </primitive>
-
     </primitives>
 
 
@@ -275,17 +276,30 @@
                 <componentref id="floor" /> 
                 <componentref id="wall" />         
                 <componentref id="all_over_table" />
-              
                 <componentref id="chair_1" />
                 <componentref id="chair_2" />
+                
+                <componentref id="central_light" />
             </children>
 
         </component>
-
-           <!-- chair -->
-           <component id="chair_1">
+        <component id="central_light">
             <transformation> 
-
+                <translate x="10.0" y="10.0" z="10.0" />
+                <scale x="2.5" y="1.2" z="2.5" />
+                <rotate axis="x" angle="90" />
+            </transformation>
+            <materials>
+                <material id="material1" />
+            </materials>
+            <texture id="texture_torus_light" />
+            <children>
+                <primitiveref id="torus1" />
+            </children>
+        </component> 
+        <!-- chair -->
+        <component id="chair_1">
+            <transformation> 
                 <translate x="12.0" y="3" z="18.0" />
                 <rotate axis="y" angle="180" />
             </transformation>
