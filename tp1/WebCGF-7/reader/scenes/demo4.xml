@@ -78,8 +78,16 @@
 
         <spot id="spot1" enabled="1" angle="2" exponent="1">
             <!-- atencao, "target" e' diferente de "direction" -->
-            <target x="0.0" y="0.0" z="0.0" />
+            <target x="10.0" y="7.0" z="10.0" />
             <location x="10.0" y="10.0" z="10.0" />
+            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
+            <specular r="0.0" g="0.0" b="0.0" a="1.0" />
+        </spot>
+        <spot id="spot2" enabled="1" angle="2" exponent="1">
+            <!-- atencao, "target" e' diferente de "direction" -->
+            <target x="0.0" y="0.0" z="0.0" />
+            <location x="30.0" y="10.0" z="30.0" />
             <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
             <diffuse r="1.0" g="1.0" b="1.0" a="1.0" />
             <specular r="0.0" g="0.0" b="0.0" a="1.0" />
@@ -146,24 +154,38 @@
         </material>
         <material id="material_gray" >
             <emission r="0.1" g="0.1" b="0.1" a="1.0" />
-            <ambient r="0.0" g="0.0" b="0.0" a="1.0" />
+            <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
             <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
             <specular r="0.5" g="0.5" b="0.5" a="1.0" />
-            <shininess value="1.0" />
+            <shininess value="0.8" />
         </material>
         <material id="material_white_piece" >
-            <emission r="0.5" g="0.5" b="0.5" a="1.0" />
+            <emission r="0.4" g="0.4" b="0.4" a="1.0" />
             <ambient r="0.5" g="0.5" b="0.5" a="1.0" />
             <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
             <specular r="0.5" g="0.5" b="0.5" a="1.0" />
-            <shininess value="1.0" />
+            <shininess value="0.5" />
         </material>
         <material id="material_black_piece" >
+            <emission r="0.0" g="0.0" b="0.0" a="1.0" />
+            <ambient r="0.1" g="0.1" b="0.1" a="1.0" />
+            <diffuse r="0.1" g="0.1" b="0.1" a="1.0" />
+            <specular r="0.1" g="0.1" b="0.1" a="1.0" />
+            <shininess value="0.5" />
+        </material>
+        <material id="material_black" >
             <emission r="0.1" g="0.1" b="0.1" a="1.0" />
             <ambient r="0.1" g="0.1" b="0.1" a="1.0" />
             <diffuse r="0.1" g="0.1" b="0.1" a="1.0" />
             <specular r="0.1" g="0.1" b="0.1" a="1.0" />
             <shininess value="1.0" />
+        </material>
+        <material id="material_chess" >
+            <emission r="0.3" g="0.3" b="0.3" a="1.0" />
+            <ambient r="0.5" g="0.5" b="0.5" a="1.0" />
+            <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
+            <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+            <shininess value="0.5" />
         </material>
     </materials>
 
@@ -239,6 +261,7 @@
     </primitives>
 
 
+    <!-- ........................................ Components ........................................-->
     <components>
 
         <component id="root">
@@ -283,6 +306,8 @@
             </children>
 
         </component>
+
+        <!-- ........................................ Central Light ........................................ -->
         <component id="central_light">
             <transformation> 
                 <translate x="10.0" y="10.0" z="10.0" />
@@ -292,19 +317,21 @@
             <materials>
                 <material id="material1" />
             </materials>
-            <texture id="texture_torus_light" />
+            <texture id="texture_torus_light2" />
             <children>
                 <primitiveref id="torus1" />
             </children>
         </component> 
-        <!-- chair -->
+
+        <!-- ........................................ Chair ........................................ -->
         <component id="chair_1">
             <transformation> 
                 <translate x="12.0" y="3" z="18.0" />
                 <rotate axis="y" angle="180" />
             </transformation>
             <materials>
-                <material id="material1" />
+                <material id="material_gray" />
+                <material id="material_black" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -321,7 +348,8 @@
                 <translate x="8.0" y="3" z="3.0" />
             </transformation>
             <materials>
-                <material id="material1" />
+                <material id="material_gray" />
+                <material id="material_black" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -333,11 +361,12 @@
                 <componentref id="chair_right_heand" />
             </children>
         </component>
+
         <component id="chair_top">
             <transformation>
             </transformation>
             <materials>
-                <material id="material_white" />
+                <material id="material_gray" />
             </materials>
             <texture id="texture_chair" />
             <children>
@@ -351,7 +380,7 @@
                 <scale x="0.1" y="8.0" z="0.1" />
             </transformation>
             <materials>
-                <material id="material_gray" />
+                <material id="inherit" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -364,7 +393,7 @@
                 <scale x="0.1" y="8.0" z="0.1" />
             </transformation>
             <materials>
-                <material id="material_gray" />
+                <material id="inherit" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -377,7 +406,7 @@
                 <scale x="0.1" y="8.0" z="0.1" />
             </transformation>
             <materials>
-                <material id="material_gray" />
+                <material id="inherit" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -394,7 +423,7 @@
                 <scale x="0.08" y="7.3" z="0.08" />
             </transformation>
             <materials>
-                <material id="material_gray" />
+                <material id="inherit" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -411,7 +440,7 @@
                 <scale x="0.08" y="7.3" z="0.08" />
             </transformation>
             <materials>
-                <material id="material_gray" />
+                <material id="inherit" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -419,6 +448,7 @@
             </children>
         </component> 
 
+        <!-- ........................................ triangle ........................................-->
         <component id="triangle3D">
             <transformation>
                 <scale x="4.0" y="1.0" z="4.0" />
@@ -507,6 +537,7 @@
         </component>
 
 
+        <!-- ........................................ Floor ........................................-->
          <component id="floor">
             <transformation>
                 <translate x="0.0" y="0.0" z="20.0" />
@@ -522,6 +553,7 @@
             </children>
         </component>
 
+        <!-- ........................................ Wall ........................................-->
         <component id="wall">
             <transformation></transformation>
             <materials>
@@ -565,7 +597,7 @@
                 <translate x="5.0" y="0.0" z="13.5" /> 
             </transformation>
             <materials>
-                <material id="material1" />
+                <material id="inherit" />
             </materials>
             <texture id="none" />
             <children>
@@ -573,13 +605,15 @@
                 <componentref id="table" /> 
             </children>
         </component>
-        <!-- Table -->
+
+        <!-- ........................................ Table ........................................-->
          <component id="table">
             <transformation>
                 <scale x="2.0" y="2.0" z="2" />
             </transformation>
             <materials>
                 <material id="material_gray" />
+                <material id="material_black" />
             </materials>
             <texture id="inherit" />
             <children>
@@ -604,7 +638,8 @@
                 <componentref id="cube" /> 
             </children>
         </component>
-        <!-- table_legs -->
+
+        <!-- ........................................ table_legs ........................................-->
         <component id="table_right_leg">
             <transformation>
                 <translate x="4.9" y="0.0" z="0.0" />
@@ -657,16 +692,16 @@
             </children>
         </component>
 
-        <!-- chess -->
+        <!-- ........................................ chess ........................................-->
         <component id="chess">
             <transformation>
                 <translate x="3.25" y="4.7" z="-1.30" />
                 <scale x="1.2" y="1.0" z="1.2" />
             </transformation>
             <materials>
-                <material id="material1" />
+                <material id="material_chess" />
             </materials>
-            <texture id="textures_xadrez" />
+                <texture id="textures_xadrez" />
             <children>
                 <componentref id="chessboard" /> 
                 <componentref id="white_chess_piece_1" /> 
@@ -698,12 +733,11 @@
         <!-- ........................................ chessboard ........................................ -->
         <component id="chessboard">
             <transformation>
-                <!--<translate x="1.0" y="2.35" z="-0.25" />-->
                 <scale x="2.7" y="1.0" z="2.7" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
             <materials>
-                <material id="material1" />
+                <material id="inherit" />
             </materials>
             <texture id="textures_xadrez" />
             <children>
@@ -717,6 +751,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -729,6 +764,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -741,6 +777,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -753,6 +790,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -765,6 +803,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -777,6 +816,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -789,6 +829,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -801,6 +842,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -813,6 +855,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -825,6 +868,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -837,6 +881,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -849,6 +894,7 @@
             </transformation>
             <materials>
                 <material id="material_white_piece" />
+                <material id="material_black_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -863,6 +909,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -875,6 +922,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -887,6 +935,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -899,6 +948,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -911,6 +961,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -923,6 +974,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -935,6 +987,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -947,6 +1000,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -959,6 +1013,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -971,6 +1026,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -983,6 +1039,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
@@ -995,6 +1052,7 @@
             </transformation>
             <materials>
                 <material id="material_black_piece" />
+                <material id="material_white_piece" />
             </materials>
             <texture id="none" />
             <children>
