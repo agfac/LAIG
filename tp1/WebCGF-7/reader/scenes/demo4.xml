@@ -118,6 +118,9 @@
         <texture id="texture_torus_light" file="scenes/textures/torus_light.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="texture_torus_light2" file="scenes/textures/torus_light2.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_puff" file="scenes/textures/puff.jpg" length_s="1.0" length_t="1.0" />
+        <texture id="texture_tree_top"  file="scenes/textures/tree_top.jpg" length_s="1.0" length_t="1.0" />
+        <texture id="texture_tree_body"  file="scenes/textures/tree_body.jpg" length_s="1.0" length_t="1.0" />
+        <texture id="texture_tree_vase"  file="scenes/textures/vase.png" length_s="1.0" length_t="1.0" />
     </textures>
 
 
@@ -312,10 +315,67 @@
                 
                 <componentref id="central_light" />
                 <componentref id="puff" /> 
+<!---->
+                <componentref id="tree" />  
             </children>
 
         </component>
-
+        <!-- ........................................ tree ........................................ -->
+         <component id="tree">
+            <transformation> 
+                <translate x="2.0" y="0.0" z="18.0" />
+            </transformation>
+            <materials>
+                <material id="inherit" />
+            </materials>
+            <texture id="none" />
+            <children>
+                <componentref id="tree_top" /> 
+                <componentref id="tree_body" /> 
+                <componentref id="tree_vase" /> 
+            </children>
+        </component>
+        <component id="tree_top">
+            <transformation> 
+                <translate x="0.0" y="6.0" z="0.0" />
+                <scale x="1.5" y="1.5" z="1.5" />
+            </transformation>
+            <materials>
+                <material id="inherit" />
+            </materials>
+            <texture id="texture_tree_top" />
+            <children>
+                <primitiveref id="sphere1" />
+            </children>
+        </component>
+        <component id="tree_body">
+            <transformation> 
+                <translate x="0.0" y="2.0" z="0.0" />
+                <scale x="0.4" y="5.0" z="0.4" />
+                <rotate axis="x" angle="-90" /> 
+            </transformation>
+            <materials>
+                <material id="inherit" />
+            </materials>
+            <texture id="texture_tree_body" />
+            <children>
+                <primitiveref id="cylinder1" />
+            </children>
+        </component>
+        <component id="tree_vase">
+            <transformation> 
+                <translate x="0.0" y="1.9" z="0.0" />
+                <scale x="1.8" y="2.0" z="1.8" />
+                <rotate axis="x" angle="90" /> 
+            </transformation>
+            <materials>
+                <material id="inherit" />
+            </materials>
+            <texture id="texture_tree_vase" />
+            <children>
+                <primitiveref id="cone1" />
+            </children>
+        </component>
         <!-- ........................................ puff ........................................ -->
         <component id="puff">
             <transformation> 
