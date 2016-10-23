@@ -113,7 +113,6 @@
         <texture id="texture1" file="scenes/textures/4.jpg" length_s="1.0" length_t="1.0" />
         <texture id="textures_xadrez" file="scenes/textures/xadrez.jpg" length_s="1.0" length_t="1.0" />
         <texture id="textures_wallpaper" file="scenes/textures/wallpaper.jpg" length_s="1.0" length_t="1.0" />
-        <texture id="textures_wallpaper2" file="scenes/textures/5.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_chair" file="scenes/textures/chair.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_torus_light" file="scenes/textures/torus_light.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="texture_torus_light2" file="scenes/textures/torus_light2.jpg" length_s="1.0" length_t="1.0" />

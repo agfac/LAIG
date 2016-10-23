@@ -96,9 +96,9 @@ MySceneGraph.prototype.onXMLReady=function(){
 	if(this.checkError(this.parseComponents(rootElement)))
 		return;
 
-	this.createGraph();
-
 	this.loadedOk=true;
+
+	this.createGraph();	
 
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
 	if(this.loadedOk)
@@ -868,6 +868,7 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 
 	var elems = rootElement.getElementsByTagName('components');
 
+	//Check if there is at least one component
 	if(elems == null || elems.length != 1)
 		return "components element is MISSING or more than one element";
 
@@ -1040,12 +1041,12 @@ MySceneGraph.prototype.createGraph = function(){
 		component.id = key;
 		console.log("Associating component ID: " + key);
 
-		this.checkNodes(component);
+		this.createNodes(component);
 	}
 };
 
 //Verify if components and primitives exist
-MySceneGraph.prototype.checkNodes = function(component){
+MySceneGraph.prototype.createNodes = function(component){
 
 	for(var i = 0; i < component.componentsID.length; i++){
 		

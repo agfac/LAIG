@@ -25,32 +25,32 @@ Cylinder.prototype.createCircle = function(radius,z,isTop){
 
 	for(var i = 0 ; i < this.slices; i++){
 
-	var x = radius * Math.cos(ang);
-	var y = radius * Math.sin(ang);
-	var xx = Math.cos(ang);
-	var yy = Math.sin(ang);
+		var x = radius * Math.cos(ang);
+		var y = radius * Math.sin(ang);
+		var xx = Math.cos(ang);
+		var yy = Math.sin(ang);
 
-	this.vertices.push(x,y,z);
+		this.vertices.push(x,y,z);
 
-	if(isTop == 0)
-		this.normals.push(0,0,-1);
-	else
-		this.normals.push(0,0,1);
-
-	if(i < this.slices - 2){
 		if(isTop == 0)
-			this.indices.push(indiceTemp, indiceTemp + i + 2 , indiceTemp + i + 1);
+			this.normals.push(0,0,-1);
 		else
-			this.indices.push(indiceTemp, indiceTemp + i + 1, indiceTemp + i + 2);
-	}
+			this.normals.push(0,0,1);
 
-	var s = (xx+1)/2.0;
+		if(i < this.slices - 2){
+			if(isTop == 0)
+				this.indices.push(indiceTemp, indiceTemp + i + 2 , indiceTemp + i + 1);
+			else
+				this.indices.push(indiceTemp, indiceTemp + i + 1, indiceTemp + i + 2);
+		}
 
-	var v = ((yy*-1)+1)/2.0;
+		var s = (xx+1)/2.0;
 
-	this.texCoords.push(s, v);
+		var v = ((yy*-1)+1)/2.0;
 
-	ang += this.aRad;
+		this.texCoords.push(s, v);
+
+		ang += this.aRad;
 	
 	}
 };
@@ -83,7 +83,7 @@ Cylinder.prototype.calculateNormal = function(angle){
 		x: (this.top - this.base) * Math.cos(angle) ,
 		y: (this.top - this.base) * Math.sin(angle),
 		z: this.height
-		};
+	};
 	
 	return this.calculateCross(tangent,vetor);
 };

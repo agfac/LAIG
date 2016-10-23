@@ -19,7 +19,97 @@ function Torus(scene, innerRadius, outerRadius, slices, loop) {
 };
 
 Torus.prototype = Object.create(CGFobject.prototype);
-Torus.prototype.constructor=Torus;
+Torus.prototype.constructor = Torus;
+
+Torus.prototype.initBuffers = function(){
+	
+	this.vertices = [];
+
+	this.normals = [];
+
+	this.indices = [];
+
+    this.texCoords = [];
+
+	var incrAngleV = 2* Math.PI/ this.slices;
+
+	var incrAngleR = 2* Math.PI / this.loop;
+	var index = 0;
+
+	for(var i = 0; i < this.loop; i ++){
+		
+		var position = this.innerRadius;
+		var diameter = this.length;
+		var angle = incrAngleR * i;
+				
+		this.drawCircle(position,diameter, angle, this.slices, incrAngleV, i/this.loop);
+
+		if(i < this.loop - 1){
+			this.createQuad(index, this.slices);
+			index += this.slices;
+		}else{
+			this.createQuad2(index,this.slices,0);
+			index += this.slices;
+		}
+
+	}
+
+	this.primitiveType=this.scene.gl.TRIANGLES;
+	this.initGLBuffers();
+};
+
+Torus.prototype.createQuad = function(index, slices){
+	
+	for(var i = 0; i < slices; i++){
+
+		if(i == slices - 1){
+			this.indices.push(index + slices);
+			this.indices.push(index	+ i);
+			this.indices.push(index + i + slices);
+
+			this.indices.push(index);
+			this.indices.push(index + i);
+			this.indices.push(index + slices);
+		}else{
+
+			this.indices.push(index	+ i);
+			this.indices.push(index + i + slices);
+			this.indices.push(index + i + slices + 1);
+
+
+			this.indices.push(index + i + 1);
+			this.indices.push(index + i);
+			this.indices.push(index + i + slices + 1);
+		}
+	}
+};
+
+Torus.prototype.createQuad2 = function(index1, slices, index2){
+	
+	for(var i = 0; i < slices; i++){
+
+		if(i == slices - 1){
+			this.indices.push(index1 + i);
+			this.indices.push(index2 + i);
+			this.indices.push(index2);
+
+
+			this.indices.push(index1 + i);
+			this.indices.push(index2);
+			this.indices.push(index1);
+		}else{
+
+			this.indices.push(index1 + i);
+			this.indices.push(index2 + i);
+			this.indices.push(index2 + i + 1);
+
+			this.indices.push(index1 + i);
+			this.indices.push(index2 + i + 1);
+			this.indices.push(index1 + i + 1);
+
+		}
+	}
+};
 
 Torus.prototype.getPoint = function(matrix, position){
 
@@ -29,11 +119,15 @@ Torus.prototype.getPoint = function(matrix, position){
 
 };
 
-Torus.prototype.drawCircle = function( positionX, diameter, angle, slices, incrAngle, percent){
+Torus.prototype.drawCircle = function(positionX, diameter, angle, slices, incrAngle, percent){
+	
 	var radius = diameter/2;
+	
 	if(percent >= 0.5)
 		percent = 1.0 - percent;
+	
 	percent *= 2;
+	
 	if(percent <= 0)
 		percent = 0.01;
 	else if(percent >= 1)
@@ -76,99 +170,4 @@ Torus.prototype.drawCircle = function( positionX, diameter, angle, slices, incrA
 		this.normals.push(finalNormal[2]);
 
 	}
-};
-
-Torus.prototype.createQuad = function( index, slices){
-	
-	for(var i = 0; i < slices; i++){
-
-		if(i == slices - 1){
-			this.indices.push(index + slices);
-			this.indices.push(index	+ i);
-			this.indices.push(index + i + slices);
-
-			this.indices.push(index);
-			this.indices.push(index + i);
-			this.indices.push(index + slices);
-		}else{
-
-			this.indices.push(index	+ i);
-			this.indices.push(index + i + slices);
-			this.indices.push(index + i + slices + 1);
-
-
-			this.indices.push(index + i + 1);
-			this.indices.push(index + i);
-			this.indices.push(index + i + slices + 1);
-		}
-	}
-};
-
-Torus.prototype.createQuad2 = function( index1, slices, index2){
-	
-	for(var i = 0; i < slices; i++){
-
-		if(i == slices - 1){
-			this.indices.push(index1 + i);
-			this.indices.push(index2 + i);
-			this.indices.push(index2);
-
-
-			this.indices.push(index1 + i);
-			this.indices.push(index2);
-			this.indices.push(index1);
-		}else{
-
-			this.indices.push(index1 + i);
-			this.indices.push(index2 + i);
-			this.indices.push(index2 + i + 1);
-
-			this.indices.push(index1 + i);
-			this.indices.push(index2 + i + 1);
-			this.indices.push(index1 + i + 1);
-
-		}
-	}
-};
-
-Torus.prototype.initBuffers = function () {
-	this.vertices = [];
-
-	this.normals = [];
-
-	this.indices = [];
-
-    this.texCoords = [];
-
-	var incrAngleV = 2* Math.PI/ this.slices;
-
-	var incrAngleR = 2* Math.PI / this.loop;
-	var index = 0;
-
-	for(var i = 0; i < this.loop; i ++){
-		var position = this.innerRadius;
-		var diameter = this.length;
-		var angle = incrAngleR * i;
-		console.log("angle:" + angle);
-		this.drawCircle(position,diameter, angle, this.slices, incrAngleV, i/this.loop);
-
-		if( i < this.loop - 1){
-			this.createQuad(index, this.slices);
-			index += this.slices;
-		}else{
-
-			this.createQuad2(index,this.slices,0);
-			index += this.slices;
-		}
-
-	}
-	console.log("LENGTHS");
-
-	console.log(this.vertices.length/3);
-	console.log(this.normals.length /3);
-	console.log(this.indices.length /3);
-	console.log(this.texCoords.length /2);
-
-	this.primitiveType=this.scene.gl.TRIANGLES;
-	this.initGLBuffers();
 };
