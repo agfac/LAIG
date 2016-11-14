@@ -1,5 +1,5 @@
 function Rectangle(scene, x1, x2, y1, y2){
-
+	
 	CGFobject.call(this,scene);
 
 	this.x1 = x1;

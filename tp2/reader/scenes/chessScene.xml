@@ -29,7 +29,7 @@
         <perspective id="vista1" near="0.01" far="100.0" angle="45.0">
             <from x="30.0" y="15.0" z="30.0" />
             <to x="0.0" y="0.0" z="0.0" />
-        </perspective>
+        </perspective> 
         <perspective id="vista2" near="0.01" far="100.0" angle="40.0">
             <from x="20.0" y="15.0" z="20.0" />
             <to x="10.0" y="5.0" z="10.0" />
@@ -112,9 +112,9 @@
 
         <texture id="texture1" file="scenes/textures/4.jpg" length_s="1.0" length_t="1.0" />
         <texture id="textures_xadrez" file="scenes/textures/xadrez.jpg" length_s="1.0" length_t="1.0" />
-        <texture id="textures_wallpaper" file="scenes/textures/wallpaper.jpg" length_s="2.0" length_t="1.0" />
+        <texture id="textures_wallpaper" file="scenes/textures/wallpaper.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_chair" file="scenes/textures/chair.jpg" length_s="1.0" length_t="1.0" />
-        <texture id="texture_torus_light" file="scenes/textures/torus_light.jpg" length_s="1.0" length_t="1.0" />
+        <texture id="texture_torus_light" file="scenes/textures/torus_light.jpg" length_s="1.0" length_t="1.0" /> 
         <texture id="texture_torus_light2" file="scenes/textures/torus_light2.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_puff" file="scenes/textures/puff.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_tree_top"  file="scenes/textures/tree_top.jpg" length_s="1.0" length_t="1.0" />
@@ -214,6 +214,19 @@
 
     </transformations>
 
+    <animations>
+    <!-- podem existir zero ou mais nós "animation" -->
+    <!-- span é o tempo, em segundos, que a animação deve -->
+    <!-- demorar. Nesta versão do formato DSX, type pode ter -->
+    <!-- o valor "linear" ou "circular"; na animacao circular -->
+    <!-- os angulos sao expressos em graus  -->
+
+    <animation id="ss" span="ff" type="linear">
+        <controlpoint xx="ff" yy="ff" zz="ff"/>
+    </animation>
+    <animation id="ss" span="ff" type="circular" center="ff ff ff"
+        radius="ff" startang="ff" rotang="ff"/>
+    </animations>
 
     <primitives>
 
@@ -242,7 +255,7 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-            <cylinder base="1.0" top="1.0" height="1.0" slices="50" stacks="20" />
+            <cylinder base="1.0" top="1.0" height="1.0" slices="50" stacks="20" /> 
         </primitive>
 
         <primitive id="cone1">
@@ -250,7 +263,7 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-            <cylinder base="1.0" top="0.2" height="1.0" slices="50" stacks="20" />
+            <cylinder base="1.0" top="0.2" height="1.0" slices="50" stacks="20" /> 
         </primitive>
 
         <primitive id="sphere1">
@@ -258,7 +271,7 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-            <sphere radius="1.0" slices="50" stacks="20" />
+            <sphere radius="1.0" slices="50" stacks="20" /> 
         </primitive>
 
         <primitive id="torus1">
@@ -266,8 +279,41 @@
             <!--     rectangle, triangle, cylinder, sphere, torus -->
             <!-- os parametros devem ser interpretados, genericamente como-->
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
-             <torus inner="0.5" outer="1.0" slices="100" loops="50" />
+             <torus inner="0.5" outer="1.0" slices="100" loops="50" /> 
         </primitive>
+
+        <primitive id="ss">
+            <!-- Nova primitiva: plano, discretizado em grelha -->
+            <!-- exemplo:                                -->
+            <!-- <plane dimX="3" dimY="2" partsX="10" partsY="7"/> -->
+            <!-- gera um plano de dimensões 3 x 2 unidades -->
+            <!-- assente em XY, centrado na origem, com a -->
+            <!-- face visível apontando para +Z e discretizado -->
+            <!-- em 10 partes no eixo XX e 7 partes no YY  -->
+
+            <plane dimX="ff" dimY="ff" partsX="ii" partsY="ii"/>
+
+            <!-- Nova primitiva: patch, discretizado em grelha -->
+            <!-- Exemplo:                                   -->
+            <!-- <patch orderU="2" orderV="3" partsU="7" partsV="9" > -->  
+            <!--     <controlpoint x=0.0 y=0.0 z=0.0 />   -->
+            <!--     <controlpoint x=2.0 y=1.0 z=0.0 />   -->
+            <!--     etc, total de 12 pontos              -->
+            <!-- O exemplo gera um patch com              -->
+            <!--     Direcao U: ordem=2 (3 pontos por curva), -->
+            <!--                discretizacao em 7 partes -->
+            <!--     Direcao V: ordem=3 (4 pontos por curva), -->
+            <!--                discretizacao em 9 partes. -->
+            <!-- O numero total de pontos a fornecer e' -->
+            <!--      (2+1)*(3+1)=12 pontos              -->
+
+            <patch orderU="ii" orderV="ii" partsU="ii" partsV="ii">
+                <controlpoint x="ff" y="ff" z="ff"/>
+            </patch>
+
+            <!-- Nova primitiva: corresponde a um veículo voador -->
+            <!-- Inclui pelo menos uma superfície não-plana -->
+            <!-- gerada utilizando evaluators -->
     </primitives>
 
 
@@ -280,7 +326,7 @@
                 <!-- deve conter uma referencia a uma das "transformation" -->
                 <!-- declaradas anteriormente -->
                 <!--<transformationref id="floor" /> -->
-
+                
             </transformation>
             <!-- declaracao obrigatoria de pelo menos um material; -->
             <!-- o material id="inherit", mantem (herda) material do "pai" -->
@@ -306,22 +352,22 @@
                 <!-- "primitiveref", identificando outros -->
                 <!-- componentes ou primitivas -->
                <!---->
-                <componentref id="floor" />
-                <componentref id="wall" />
+                <componentref id="floor" /> 
+                <componentref id="wall" />         
                 <componentref id="all_over_table" />
                 <componentref id="chair_1" />
                 <componentref id="chair_2" />
-
+                
                 <componentref id="central_light" />
-                <componentref id="puff" />
+                <componentref id="puff" /> 
 <!---->
-                <componentref id="tree" />
+                <componentref id="tree" />  
             </children>
 
         </component>
         <!-- ........................................ tree ........................................ -->
          <component id="tree">
-            <transformation>
+            <transformation> 
                 <translate x="2.0" y="0.0" z="18.0" />
             </transformation>
             <materials>
@@ -329,13 +375,13 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="tree_top" />
-                <componentref id="tree_body" />
-                <componentref id="tree_vase" />
+                <componentref id="tree_top" /> 
+                <componentref id="tree_body" /> 
+                <componentref id="tree_vase" /> 
             </children>
         </component>
         <component id="tree_top">
-            <transformation>
+            <transformation> 
                 <translate x="0.0" y="6.0" z="0.0" />
                 <scale x="1.5" y="1.5" z="1.5" />
             </transformation>
@@ -348,10 +394,10 @@
             </children>
         </component>
         <component id="tree_body">
-            <transformation>
+            <transformation> 
                 <translate x="0.0" y="2.0" z="0.0" />
                 <scale x="0.4" y="5.0" z="0.4" />
-                <rotate axis="x" angle="-90" />
+                <rotate axis="x" angle="-90" /> 
             </transformation>
             <materials>
                 <material id="inherit" />
@@ -362,10 +408,10 @@
             </children>
         </component>
         <component id="tree_vase">
-            <transformation>
+            <transformation> 
                 <translate x="0.0" y="1.9" z="0.0" />
                 <scale x="1.8" y="2.0" z="1.8" />
-                <rotate axis="x" angle="90" />
+                <rotate axis="x" angle="90" /> 
             </transformation>
             <materials>
                 <material id="inherit" />
@@ -377,7 +423,7 @@
         </component>
         <!-- ........................................ puff ........................................ -->
         <component id="puff">
-            <transformation>
+            <transformation> 
                 <translate x="16.0" y="0.0" z="4.5" />
             </transformation>
             <materials>
@@ -391,10 +437,10 @@
                 <componentref id="puff_fragment_4" />
                 <componentref id="puff_fragment_5" />
             </children>
-        </component>
+        </component> 
 
         <component id="puff_fragment_1">
-            <transformation>
+            <transformation> 
             </transformation>
             <materials>
                 <material id="material_gray" />
@@ -405,9 +451,9 @@
             <children>
                 <componentref id="puff_fragment_cylinder" />
             </children>
-        </component>
+        </component> 
         <component id="puff_fragment_2">
-            <transformation>
+            <transformation> 
                 <translate x="2.4" y="0.0" z="0.0" />
             </transformation>
             <materials>
@@ -419,9 +465,9 @@
             <children>
                 <componentref id="puff_fragment_cylinder" />
             </children>
-        </component>
+        </component> 
         <component id="puff_fragment_3">
-            <transformation>
+            <transformation> 
                 <translate x="0.0" y="0.0" z="-2.4" />
             </transformation>
             <materials>
@@ -433,9 +479,9 @@
             <children>
                 <componentref id="puff_fragment_cylinder" />
             </children>
-        </component>
+        </component> 
         <component id="puff_fragment_4">
-            <transformation>
+            <transformation> 
                 <translate x="2.4" y="0.0" z="-2.4" />
             </transformation>
             <materials>
@@ -447,9 +493,9 @@
             <children>
                 <componentref id="puff_fragment_cylinder" />
             </children>
-        </component>
+        </component> 
         <component id="puff_fragment_5">
-            <transformation>
+            <transformation> 
                 <translate x="1.2" y="2.0" z="-1.2" />
                 <scale x="3.0" y="1.0" z="3.0" />
             </transformation>
@@ -460,9 +506,9 @@
             <children>
                 <primitiveref id="sphere1" />
             </children>
-        </component>
+        </component> 
         <component id="puff_fragment_cylinder">
-            <transformation>
+            <transformation> 
                 <scale x="1.3" y="2.0" z="1.3" />
                 <rotate axis="x" angle="-90" />
             </transformation>
@@ -476,7 +522,7 @@
         </component>
         <!-- ........................................ Central Light ........................................ -->
         <component id="central_light">
-            <transformation>
+            <transformation> 
                 <translate x="10.0" y="10.0" z="10.0" />
                 <scale x="2.5" y="1.9" z="2.5" />
                 <rotate axis="x" angle="90" />
@@ -488,11 +534,11 @@
             <children>
                 <primitiveref id="torus1" />
             </children>
-        </component>
+        </component> 
 
         <!-- ........................................ Chair ........................................ -->
         <component id="chair_1">
-            <transformation>
+            <transformation> 
                 <translate x="12.0" y="3" z="18.0" />
                 <rotate axis="y" angle="180" />
             </transformation>
@@ -510,7 +556,7 @@
                 <componentref id="chair_left_heand" />
                 <componentref id="chair_right_heand" />
             </children>
-        </component>
+        </component> 
         <component id="chair_2">
             <transformation>
                 <translate x="8.0" y="3" z="3.0" />
@@ -541,7 +587,7 @@
             <children>
                 <componentref id="triangle3D" />
             </children>
-        </component>
+        </component> 
 
         <component id="chair_left_leg">
             <transformation>
@@ -555,7 +601,7 @@
             <children>
                 <componentref id="triangle3D" />
             </children>
-        </component>
+        </component> 
         <component id="chair_right_leg">
             <transformation>
                 <translate x="3.55" y="1.0" z="3.55" />
@@ -568,7 +614,7 @@
             <children>
                 <componentref id="triangle3D" />
             </children>
-        </component>
+        </component> 
         <component id="chair_leg">
             <transformation>
                 <translate x="1.8" y="1.0" z="0.1" />
@@ -581,13 +627,13 @@
             <children>
                 <componentref id="triangle3D" />
             </children>
-        </component>
+        </component> 
          <component id="chair_left_heand">
             <transformation>
                 <translate x="0.5" y="0.3" z="3.9" />
-                <rotate axis="y" angle="-27" />
-                <rotate axis="y" angle="90" />
-                <rotate axis="x" angle="-90" />
+                <rotate axis="y" angle="-27" /> 
+                <rotate axis="y" angle="90" /> 
+                <rotate axis="x" angle="-90" /> 
                 <rotate axis="z" angle="90" />
                 <scale x="0.08" y="7.3" z="0.08" />
             </transformation>
@@ -598,13 +644,13 @@
             <children>
                 <componentref id="triangle3D" />
             </children>
-        </component>
+        </component> 
         <component id="chair_right_heand">
-            <transformation>
+            <transformation>         
                 <translate x="1.88" y="0.3" z="0.65" />
-                <rotate axis="y" angle="27" />
-                <rotate axis="y" angle="-90" />
-                <rotate axis="x" angle="-90" />
+                <rotate axis="y" angle="27" /> 
+                <rotate axis="y" angle="-90" /> 
+                <rotate axis="x" angle="-90" /> 
                 <rotate axis="z" angle="90" />
                 <scale x="0.08" y="7.3" z="0.08" />
             </transformation>
@@ -615,7 +661,7 @@
             <children>
                 <componentref id="triangle3D" />
             </children>
-        </component>
+        </component> 
 
         <!-- ........................................ triangle ........................................-->
         <component id="triangle3D">
@@ -730,13 +776,13 @@
             </materials>
             <texture id="textures_wallpaper" />
             <children>
-                <componentref id="right_wall" />
-                <componentref id="left_wall" />
+                <componentref id="right_wall" /> 
+                <componentref id="left_wall" /> 
             </children>
         </component>
         <component id="right_wall">
             <transformation>
-               <transformationref id="wall_transformation" />
+               <transformationref id="wall_transformation" /> 
             </transformation>
             <materials>
                 <material id="inherit" />
@@ -763,15 +809,15 @@
         <!-- all over table -->
         <component id="all_over_table">
             <transformation>
-                <translate x="5.0" y="0.0" z="13.5" />
+                <translate x="5.0" y="0.0" z="13.5" /> 
             </transformation>
             <materials>
                 <material id="inherit" />
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess" />
-                <componentref id="table" />
+                <componentref id="chess" /> 
+                <componentref id="table" /> 
             </children>
         </component>
 
@@ -787,11 +833,11 @@
             </materials>
             <texture id="inherit" />
             <children>
-               <componentref id="table_top" />
-               <componentref id="table_right_leg" />
-               <componentref id="table_left_leg" />
-               <componentref id="table_rightBack_leg" />
-               <componentref id="table_leftBack_leg" />
+               <componentref id="table_top" /> 
+               <componentref id="table_right_leg" /> 
+               <componentref id="table_left_leg" /> 
+               <componentref id="table_rightBack_leg" /> 
+               <componentref id="table_leftBack_leg" /> 
             </children>
         </component>
         <!-- table top -->
@@ -805,7 +851,7 @@
             </materials>
             <texture id="inherit" />
             <children>
-                <componentref id="cube" />
+                <componentref id="cube" /> 
             </children>
         </component>
 
@@ -820,7 +866,7 @@
             </materials>
             <texture id="inherit" />
             <children>
-                <componentref id="cube" />
+                <componentref id="cube" /> 
             </children>
         </component>
         <component id="table_left_leg">
@@ -832,7 +878,7 @@
             </materials>
             <texture id="inherit" />
             <children>
-                <componentref id="cube" />
+                <componentref id="cube" /> 
             </children>
         </component>
         <component id="table_rightBack_leg">
@@ -845,7 +891,7 @@
             </materials>
             <texture id="inherit" />
             <children>
-                <componentref id="cube" />
+                <componentref id="cube" /> 
             </children>
         </component>
         <component id="table_leftBack_leg">
@@ -858,7 +904,7 @@
             </materials>
             <texture id="inherit" />
             <children>
-                <componentref id="cube" />
+                <componentref id="cube" /> 
             </children>
         </component>
 
@@ -873,9 +919,9 @@
             </materials>
                 <texture id="textures_xadrez" />
             <children>
-                <componentref id="chessboard" />
-                <componentref id="white_chess_piece_1" />
-                <componentref id="white_chess_piece_2" />
+                <componentref id="chessboard" /> 
+                <componentref id="white_chess_piece_1" /> 
+                <componentref id="white_chess_piece_2" /> 
                 <componentref id="white_chess_piece_3" />
                 <componentref id="white_chess_piece_4" />
                 <componentref id="white_chess_piece_5" />
@@ -886,8 +932,8 @@
                 <componentref id="white_chess_piece_10" />
                 <componentref id="white_chess_piece_11" />
                 <componentref id="white_chess_piece_12" />
-                <componentref id="black_chess_piece_1" />
-                <componentref id="black_chess_piece_2" />
+                <componentref id="black_chess_piece_1" /> 
+                <componentref id="black_chess_piece_2" /> 
                 <componentref id="black_chess_piece_3" />
                 <componentref id="black_chess_piece_4" />
                 <componentref id="black_chess_piece_5" />
@@ -925,7 +971,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_2">
@@ -938,7 +984,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_3">
@@ -951,7 +997,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_4">
@@ -964,7 +1010,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_5">
@@ -977,7 +1023,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_6">
@@ -990,7 +1036,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_7">
@@ -1003,7 +1049,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_8">
@@ -1016,7 +1062,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
          <component id="white_chess_piece_9">
@@ -1029,7 +1075,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_10">
@@ -1042,7 +1088,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_11">
@@ -1055,7 +1101,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="white_chess_piece_12">
@@ -1068,7 +1114,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
 
@@ -1083,7 +1129,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_2">
@@ -1096,7 +1142,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_3">
@@ -1109,7 +1155,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_4">
@@ -1122,7 +1168,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_5">
@@ -1135,7 +1181,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_6">
@@ -1148,7 +1194,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_7">
@@ -1161,7 +1207,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_8">
@@ -1174,7 +1220,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
          <component id="black_chess_piece_9">
@@ -1187,7 +1233,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_10">
@@ -1200,7 +1246,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_11">
@@ -1213,7 +1259,7 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
         <component id="black_chess_piece_12">
@@ -1226,25 +1272,25 @@
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece" />
+                <componentref id="chess_piece" /> 
             </children>
         </component>
 
         <!-- ........................................ chess piece (0,0,0) ........................................ -->
          <component id="chess_piece">
             <transformation>
-                <scale x="0.3" y="0.5" z="0.3" />
+                <scale x="0.3" y="0.5" z="0.3" /> 
             </transformation>
             <materials>
                 <material id="inherit" />
             </materials>
             <texture id="none" />
             <children>
-                <componentref id="chess_piece_fragment_1" />
-                <componentref id="chess_piece_fragment_2" />
-                <componentref id="chess_piece_fragment_3" />
-                <componentref id="chess_piece_fragment_4" />
-                <componentref id="chess_piece_fragment_5" />
+                <componentref id="chess_piece_fragment_1" /> 
+                <componentref id="chess_piece_fragment_2" /> 
+                <componentref id="chess_piece_fragment_3" /> 
+                <componentref id="chess_piece_fragment_4" /> 
+                <componentref id="chess_piece_fragment_5" /> 
                 <componentref id="chess_piece_fragment_6" />
             </children>
         </component>
@@ -1342,12 +1388,12 @@
             </materials>
             <texture id="inherit" />
             <children>
-               <componentref id="cube_left" />
-               <componentref id="cube_right" />
-               <componentref id="cube_top" />
-               <componentref id="cube_bottom" />
-               <componentref id="cube_z" />
-               <componentref id="cube_back" />
+               <componentref id="cube_left" /> 
+               <componentref id="cube_right" /> 
+               <componentref id="cube_top" /> 
+               <componentref id="cube_bottom" /> 
+               <componentref id="cube_z" /> 
+               <componentref id="cube_back" /> 
             </children>
         </component>
         <component id="cube_left">
@@ -1364,7 +1410,7 @@
             </children>
         </component>
         <component id="cube_right">
-            <transformation>
+            <transformation>                
                 <translate x="1.0" y="0.0" z="0.0" />
                 <rotate axis="y" angle="90.0" />
             </transformation>
@@ -1377,7 +1423,7 @@
             </children>
         </component>
         <component id="cube_top">
-            <transformation>
+            <transformation>   
                 <translate x="0.0" y="1.0" z="0.0" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
@@ -1414,7 +1460,7 @@
             </children>
         </component>
         <component id="cube_back">
-            <transformation>
+            <transformation>        
                 <translate x="1.0" y="0.0" z="-1.0" />
                 <rotate axis="y" angle="180.0" />
             </transformation>
