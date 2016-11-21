@@ -227,14 +227,19 @@
             <controlpoint xx="5" yy="0" zz="3"/>
             <controlpoint xx="3" yy="0" zz="0"/>
     </animation>
-    <animation id="CircularAnimation1" span="3" type="circular" centerx="2.0" centery="2.0" centerz="2.0" radius="2.0" startang="10.0" rotang="70.0" />
+    <animation id="CircularAnimation1" span="3" type="circular" centerx="2.0" centery="0.0" centerz="2.0" radius="2.0" startang="10.0" rotang="70.0" />
     
     <animation id="vehicleAnimation1" span="5" type="linear">
             <controlpoint xx="3" yy="8" zz="3"/>
             <controlpoint xx="3" yy="10" zz="5"/>
             <controlpoint xx="3" yy="13" zz="10"/>
     </animation>
-    <animation id="vehicleAnimation2" span="5" type="circular" centerx="3" centery="13.0" centerz="15.5" radius="1.0" startang="0.0" rotang="90.0" />
+    <animation id="vehicleAnimation2" span="5" type="circular" centerx="3" centery="13.0" centerz="15.5" radius="1.0" startang="0.0" rotang="45.0" />
+    <animation id="vehicleAnimation3" span="5" type="linear">
+            <controlpoint xx="4" yy="12" zz="15"/>
+            <controlpoint xx="10" yy="15" zz="20"/>
+            <controlpoint xx="15" yy="20" zz="25"/>
+    </animation>
     </animations>
 
 
@@ -458,6 +463,7 @@
             <animation>
                 <animationref id="vehicleAnimation1" />
                 <animationref id="vehicleAnimation2" />
+                <animationref id="vehicleAnimation3" />
             </animation>
             <materials>
                 <material id="material_gray" />
