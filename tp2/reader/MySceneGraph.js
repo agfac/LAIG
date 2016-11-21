@@ -91,6 +91,8 @@ MySceneGraph.prototype.onXMLReady=function(){
 		return;
 	if(this.checkError(this.parseTransformations(rootElement)))
 		return;
+	if(this.checkError(this.parseAnimations(rootElement)))
+		return;
 	if(this.checkError(this.parsePrimitives(rootElement)))
 		return;
 	if(this.checkError(this.parseComponents(rootElement)))
@@ -638,25 +640,111 @@ MySceneGraph.prototype.calculateTransformationMatrix = function(element){
 */
 MySceneGraph.prototype.parseAnimations = function(rootElement){
 
-	var elems = rootElement.getElementsByTagName('animations');
+	if(rootElement == null)
+		return;
 
-	if(elems == null || elems.length != 1)
-		return "Animation element is MISSING or more than one element!";
+	var elems = rootElement.getElementsByTagName("animations");
 
-	var animations = elems[0];
+	if(elems == null || elems > 1){
+		return "There must be only one <animations> block!";
+	}
 
-	//Check if there is at least one animation
-	if(animations.children.length < 1)
-		return "There should be at least 1 or more animation blocks";
+	if(elems[0] != rootElement.children[7]){
+		console.warn("Expected 'components' (eigth element) but got : " + rootElement.children[8].nodeName);
+	}
 
-	//Check if seventh element is materials
-	if(animations != rootElement.children[7])
-		return "Expected 'animations' as eigth element but got : " + rootElement.children[6].nodeName;
+	var block = elems[0];
 
-	var nNodes = animations.children.length;
+	console.log("Childs:" + block.children.length);
 
-	for(var i = 0; i < nNodes; i++)
-		this.parse(animations.children[i]);
+	for(var i = 0; i < block.children.length; i++){
+
+		var child = block.children[i];
+
+		if(child.tagName != "animation")
+			return "There must be one or more blocks of <animation> inside <animations>!";
+
+		var type = this.reader.getString(child,'type');
+
+		switch(type){
+			case 'linear':
+				var error = this.parseAnimationLinear(child);
+				if(error) 
+					return error;
+				break;
+			case 'circular':
+				var error = this.parseAnimationCircular(child);
+				if(error) 
+					return error;
+				break;
+		}
+	}
+};
+
+/*
+========================= LINEAR ANIMATION =========================
+*/
+/* 	Function to parse linear animations
+	Parses the following elements:
+	linear animation
+*/
+MySceneGraph.prototype.parseAnimationLinear = function(element){
+
+	if(element == null)
+		return "Element <animation> is null!";
+
+	if(element.children.length < 2)
+		return "Error in animarion id:[ " + element.id + " ] There must be more than one <controlpoint>!";
+
+	console.log("Parsing animation:" + element.id);
+
+	var span = this.reader.getFloat(element, 'span');
+
+	var points = [];
+
+	for(var i = 0; i < element.children.length; i++){
+
+		var child = element.children[i];
+
+		if(child.tagName != 'controlpoint')
+			return "Error! in animation id:[ " + element.id + " ] Expecting controlpoint, got " + child.tagName;
+
+		points.push(this.getVector3FromElement2(child,"xx","yy","zz"));
+
+	}
+
+	console.log("Animation Parsed: " + element.id );
+	
+	this.animations[element.id] = new LinearAnimation(points, span);
+
+	return null;
+};
+
+/*
+========================= CIRCULAR ANIMATION =========================
+*/
+/* 	Function to parse circular animations
+	Parses the following elements:
+	circular animation
+*/
+MySceneGraph.prototype.parseAnimationCircular = function(element){
+
+	if(element == null)
+		return "Element <animation> is null!";
+
+	console.log("Parsing animation:" + element.id);
+
+	var span = this.reader.getFloat(element, 'span');
+	var center = this.getVectorXYZFromElement2(element,"centerx","centery","centerz");
+	var radius = this.reader.getFloat(element,'radius');
+	var startAng = this.reader.getFloat(element,'startang');
+	var rotAng = this.reader.getFloat(element,'rotang');
+
+	console.log("Animation Parsed: " + element.id );
+	
+	this.animations[element.id] = new CircularAnimation(span,center, radius, startAng, rotAng);
+
+	return null;
 };
 
 /*
@@ -709,6 +797,8 @@ MySceneGraph.prototype.parsePrimitives = function(rootElement){
 	cylinder
 	sphere
 	torus
+	plane
+	patch
 */
 MySceneGraph.prototype.parsePrimitive = function(element){
 
@@ -736,6 +826,12 @@ MySceneGraph.prototype.parsePrimitive = function(element){
 		break;
 		case "sphere":
 		primitive = this.parseSphere(child);
+		break;
+		case "plane":
+		primitive = this.parsePlane(child);
+		break;
+		case "patch":
+		primitive = this.parsePatch(child);
 		break;
 	}
 
@@ -887,6 +983,65 @@ MySceneGraph.prototype.parseTorus = function(element){
 	return new Torus(this.scene, inner, outer, slices, loops);
 };
 
+/* Function to parse the element: Plane
+	Parses the following attributes:
+	orderU : ff
+	orderV : ff
+	partsU : ii
+	partsV : ii
+*/
+MySceneGraph.prototype.parsePatch = function(element){
+	
+	var tmp = {
+		x1:0,
+		y1:0,
+		x2:0,
+		y2:0
+	}
+	
+	tmp.x1 = this.reader.getInteger(element,"orderU");
+	tmp.x2 = this.reader.getInteger(element,"orderV");
+	tmp.y1 = this.reader.getInteger(element,"partsU");
+	tmp.y2 = this.reader.getInteger(element,"partsV");
+	
+	console.log("New Plane orderU:" + tmp.x1, "orderV:" + tmp.y1 + "partsU:" + tmp.x2 + "partsV:" + tmp.y2 );
+	
+	var nPoints = (tmp.x1 + 1)*(tmp.x2 + 1);
+	
+	if (nPoints != element.children.length)
+		console.error("The number of control points on primitive " + element.parentNode.id + " must be equal to " + nPoints);
+	
+	var controlP = this.parseControlPoints(element.children);
+	
+	return new Patch(this.scene,tmp.x1, tmp.x2, tmp.y1, tmp.y2, controlP);
+};
+
+/* 	Function to parse the element: Plane
+	Parses the following attributes:
+	dimX : ff
+	dimY : ff
+	partsX : ii
+	partsY : ii
+*/
+MySceneGraph.prototype.parsePlane = function(element){
+	
+	var tmp = {
+		x1:0,
+		y1:0,
+		x2:0,
+		y2:0
+	}
+	
+	tmp.x1 = this.reader.getFloat(element,"dimX");
+	tmp.x2 = this.reader.getFloat(element,"dimY");
+	tmp.y1 = this.reader.getInteger(element,"partsX");
+	tmp.y2 = this.reader.getInteger(element,"partsY");
+	
+	console.log("New Plane dimX:" + tmp.x1, "dimY:" + tmp.y1 + "partsX:" + tmp.x2 + "partsY:" + tmp.y2 );
+	
+	return new Plane(this.scene,tmp.x1, tmp.x2, tmp.y1, tmp.y2);
+};
+
 /*
 ========================= COMPONENTS =========================
 */
@@ -1007,6 +1162,8 @@ MySceneGraph.prototype.parseComponent = function(element){
 		}
 	}
 
+	comp.animations = this.parseComponentAnimation(element);
+
 	//Verify duplicated components
 	if(this.components[element.id] != null)
 		console.error("Duplicate component id found : " + element.id);
@@ -1053,6 +1210,44 @@ MySceneGraph.prototype.parseComponentMaterial = function(element){
 		else
 			res.push(mat);
 	}
+	return res;
+};
+
+/* 	Function to parse animation inside component
+	Parses the following elements:
+	animation
+*/
+MySceneGraph.prototype.parseComponentAnimation = function(element){
+
+	var res = [];
+
+	var anims = element.getElementsByTagName('animation');
+
+	if(anims == null || anims.length == 0)
+		return res;
+
+	if(anims.length > 1){
+		
+		console.error("There must be only 1 animation block per component!");
+		
+		return res;
+	}
+
+	var childs = anims[0].children;
+	var nnodes = childs.length;
+
+	for(var i = 0; i < nnodes; i++){
+		
+		var animref = childs[i];
+
+		var animation = this.animations[animref.id];
+
+		if(animation == null){
+			console.error("Animation ID:"+ animref.id + " don't exist!");
+		}else
+			res.push(animation);
+	}
+	
 	return res;
 };
 
@@ -1160,6 +1355,25 @@ MySceneGraph.prototype.getVectorXYZW = function(element){
 	return vector;
 };
 
+//Function that get a vector3 from an Element
+MySceneGraph.prototype.getVectorXYZFromElement2 = function (element, stringx, stringy, stringz){
+
+	var vector = {
+		x : 0,
+		y : 0,
+		z : 0
+	};
+
+	if(element == null)
+		return vector;
+	
+	vector.x = this.reader.getFloat(element, stringx);
+	vector.y = this.reader.getFloat(element, stringy);
+	vector.z = this.reader.getFloat(element, stringz);
+	
+	return vector;
+};
+
 //Returns a string with the values of a XYZW vector
 MySceneGraph.prototype.printVectorXYZW = function(vector){
 
@@ -1209,6 +1423,23 @@ MySceneGraph.prototype.getRGBAFromElement = function(element){
 	return rgbaList;
 };
 
+/*
+Function to parse the control points of a patch
+*/
+MySceneGraph.prototype.parseControlPoints = function (controlPoints) {
+	
+	var res = [];
+	
+	for(var i = 0; i < controlPoints.length;i++){
+		
+		var point = this.getVectorXYZ(controlPoints[i]);
+		
+		res.push([point.x,point.y,point.z]);
+	}
+	
+	return res;
+};
+
 //Returns a string with the values of a RGBA structure
 MySceneGraph.prototype.printRGBA = function(element){
 
@@ -1232,4 +1463,14 @@ MySceneGraph.prototype.getCamera = function(){
 MySceneGraph.prototype.getRoot = function(){
 	
 	return this.components[this.sceneInfo.root];
+};
+
+MySceneGraph.prototype.update=function(currTime) {
+	
+	for(var key in this.components){
+
+		var component = this.components[key];
+		
+		component.update(currTime);
+	}
 };

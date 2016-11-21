@@ -1,9 +1,14 @@
-function Animation(){
-	
-}
+var Animation = function() {
 
-Animation.prototype.construtor = Animation;
+    if (this.constructor === Animation) {
+        throw new Error("Can not instantiate an abstract class!");
+    }
+};
 
-Animation.prototype.init = function(id){
-	this.id = id;
-}
+Animation.prototype.getTransformation = function(time) {
+    throw new Error("Abstract class!");
+};
+
+Animation.prototype.getTime = function() {
+    throw new Error("Abstract class!");
+};

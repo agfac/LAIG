@@ -1,29 +1,65 @@
-CircularAnimation.prototype = new Animation();
+var CircularAnimation = function(time, center, radius, startAng, rotAng) {
 
-function CircularAnimation(id, span, center, radius, startang, rotang){
-	this.init(id);
-	this.span = span;
-	this.center = center;
-	this.radius = radius;
-	this.startang = startang;
-	this.rotang = rotang;
-}
+    Animation.call(this);
 
-CircularAnimation.prototype = Object.create.(Animation.prototype);
+    this.center = center;
+    this.totalTime = time;
+
+    this.radius = radius;
+
+    this.rotAng = rotAng;
+
+    this.totalDist = radius * rotAng;
+
+    this.startAng = startAng * Math.PI/180;
+    this.endAng = (startAng + rotAng)* Math.PI/180;
+
+    this.velocity = this.totalDist / this.totalTime;
+};
+
+CircularAnimation.prototype = Object.create(Animation.prototype);
 CircularAnimation.prototype.constructor = CircularAnimation;
 
-CircularAnimation.prototype.getMatrix = function(t){
-	var m = mat4.create();
+CircularAnimation.prototype.getLength = function(p1, p2){
 
-	if(t > this.span)
-		t = this.span;
+    vect = {
+        x: p1.x - p2.x,
+        y: p1.y - p2.y,
+        z: p1.z - p2.z
+    }
 
-	mat4.translate(m, m, this.center);
-	mat4.rotate(m, m, this.startang + (t/this.span) * this.rotang, [0,1,0]);
-	mat4.translate(m, m, [this.radius,0,0]);
+    return Math.sqrt(vect.x * vect.x + vect.y * vect.y + vect.z * vect.z);
+};
 
-	if(this.rotang > 0)
-		mat4.rotate(m, m, Math.PI, [0,1,0]);
+CircularAnimation.prototype.getTransformation = function(time) {
+    
+    if(time > this.totalTime) time = this.totalTime;
 
-	return m;
-}
+    var currDist = time * this.velocity;
+
+    var angle = this.lerpAngle(this.startAng, this.endAng, currDist/this.totalDist);
+
+    var matrix = mat4.create();
+
+    var diff = 1;
+
+    if(this.rotAng < 0) 
+    	diff = 0;
+
+    mat4.translate(matrix,matrix,[this.center.x,this.center.y,this.center.z]);
+    mat4.rotate(matrix,matrix,angle,[0,1,0]);
+    mat4.translate(matrix,matrix,[this.radius,0,0]);
+    mat4.rotate(matrix,matrix,diff * Math.PI,[0,1,0]);
+
+    return matrix;
+};
+
+Animation.prototype.getTime = function() {
+   
+    return this.totalTime;
+};
+
+CircularAnimation.prototype.lerpAngle = function(a1, a2, t){
+   
+    return a1 + (a2 - a1) * t;
+};

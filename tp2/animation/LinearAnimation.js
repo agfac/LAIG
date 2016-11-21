@@ -1,61 +1,108 @@
-function LinearAnimation(id, span, controlPoints){
-	this.init(id);
-	this.span = span;
-	this.controlPoints = controlPoints;
+var LinearAnimation = function(controlPoints , time) {
 
-	this.totalDistance = 0;
-	for(var i = 1; i < controlPoints.length; i++){
-		this.totalDistance += this.calculateDistance(controlPoints[i-1], controlPoints[i]);
-	}
-}
+    Animation.call(this);
+    this.controlPoints = controlPoints;
+    this.totalTime = time;
+
+    this.totalLength = 0;
+    this.distances = [];
+
+    for(var i = 0 ; i < controlPoints.length - 1; i++){
+
+        var length = this.getLength(controlPoints[i], controlPoints[i+1]);
+
+        this.distances.push(length);
+
+        this.totalLength += length;
+    }
+
+    this.velocity = this.totalLength/this.totalTime;
+};
 
 LinearAnimation.prototype = Object.create(Animation.prototype);
 LinearAnimation.prototype.constructor = LinearAnimation;
 
-LinearAnimation.prototype.getMatrix = function(t){
-	var m = mat4.create();
+LinearAnimation.prototype.getLength = function(p1, p2){
 
-	if(t >= this.span){
-		mat4.translate(m, m, this.controlPoints[this.controlPoints.length - 1]);
-		mat4.rotate(m, m, this.calculateRotation(this.controlPoints[this.controlPoints.length - 2], this.controlPoints[this.controlPoints.length - 1]), [0,1,0]);
-		return m;
-	}
+    vect = {
+        x: p1.x - p2.x,
+        y: p1.y - p2.y,
+        z: p1.z - p2.z
+    }
 
-	var totalS = this.totalDistance * t / this.span;
-	var currentDist = 0;
-	var i;
-	var dist;
-	for(i = 1; i < this.controlPoints.length; i++){
-		dist = this.calculateDistance(this.controlPoints[i - 1], this.controlPoints[i]);
-		if(currentDist + dist < totalS)
-			currentDist += dist;
-		else
-			break;
-	}
+    return Math.sqrt(vect.x * vect.x + vect.y * vect.y + vect.z * vect.z);
+};
 
-	var s = totalS - currentDist;
-	var interp = this.lerp(this.controlPoints[i - 1], this.controlPoints[i], s/dist);
-	mat4.translate(m, m, interp);
+LinearAnimation.prototype.getTransformation = function(time) {
+    
+    if(time > this.totalTime) 
+    	time = this.totalTime;
 
-	mat4.rotate(m, m, this.calculateRotation(this.controlPoints[i - 1], this.controlPoints[i]), [0,1,0]);
-	
-	return m;
-}
+    transf = this.getMatrix(time);
 
-LinearAnimation.prototype.calculateRotation = function(p1, p2){
-	return Math.atan2(p2[0] - p1[0], p2[2] - p1[2]);
-}
+    var matrix = mat4.create();
 
-LinearAnimation.prototype.calculateDistance = function(p1, p2){
-	return Math.sqrt(Math.pow(p2[0] - p1[0],2) + Math.pow(p2[1] - p1[1],2) + Math.pow(p2[2] - p1[2],2));
-}
+    mat4.translate(matrix,matrix,[transf.pos.x,transf.pos.y,transf.pos.z]);
+    mat4.rotate(matrix,matrix,transf.angle,[0,1,0]);
 
-LinearAnimation.prototype.lerp = function(p1, p2, t){
-	var result = [];
+    return matrix;
+};
 
-	for(var i = 0; i < p1.length; i++){
-		result[i] = p1[i] * (1.0 - t) + (p2[i] * t);
-	}
+Animation.prototype.getTime = function() {
+    
+    return this.totalTime;
+};
 
-	return result;
-}
+LinearAnimation.prototype.lerpPosition = function(p1, p2, t){
+
+    p = {
+
+        x: p1.x + (p2.x - p1.x) * t,
+        y: p1.y + (p2.y - p1.y) * t,
+        z: p1.z + (p2.z - p1.z) * t
+    }
+
+    return p;
+};
+
+LinearAnimation.prototype.getAngle = function(p1, p2){
+
+    vect = {
+        x: p2.x - p1.x,
+        y: p2.z - p1.z
+    }
+
+    return (-Math.atan2(vect.y, vect.x) + Math.PI/2);
+};
+
+LinearAnimation.prototype.getMatrix = function(time){
+
+    var dist = time * this.velocity;
+
+    var points = [];
+    var totalDist = 0;
+
+    var lastDist = 0;
+    var currDist = 0;
+
+    for(var i = 0; i < this.distances.length; i++){
+
+        totalDist += this.distances[i];
+
+        if(dist <= totalDist){
+
+            currDist = this.distances[i] - (totalDist - dist);
+            points.push(this.controlPoints[i]);
+            points.push(this.controlPoints[i + 1]);
+            lastDist = this.distances[i];
+            break;
+        }
+    }
+
+    ret = {
+        pos: this.lerpPosition(points[0], points[1], currDist/lastDist ),
+        angle: this.getAngle(points[0], points[1])
+    }
+
+    return ret;
+};

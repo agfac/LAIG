@@ -30,6 +30,13 @@ function Component(scene){
 
 	//ComponentsRefs
 	this.componentsID = [];
+
+	//Animations
+	this.animations = [];
+
+	this.time = 0;
+
+	this.firstTime = 0;
 };
 
 Component.prototype = Object.create(CGFobject.prototype);
@@ -66,13 +73,13 @@ Component.prototype.display = function(material, texture){
 			this.components[i].display(mat,tex);
 	}
 
-	if(tex != null)
-		mat.setTexture(tex.texFile);
-	else
-		mat.setTexture(tex);
-	mat.apply();
-
 	for(var i = 0; i < this.primitives.length; i++){
+		if(tex != null)
+			mat.setTexture(tex.texFile);
+		else
+			mat.setTexture(tex);
+		mat.apply();
+		
 		if(tex != null)
 			if(this.primitives[i].updateTexCoords != null)
 				this.primitives[i].updateTexCoords(tex.length_s, tex.length_t);
@@ -92,3 +99,43 @@ Component.prototype.changeMaterial = function(){
 
 	this.material = this.materials[this.indexMaterial];
 };
+
+Component.prototype.update = function(currTime){
+    
+    if(this.firstTime == 0){
+        
+        this.firstTime = currTime;
+        return;
+    }
+
+    this.time = currTime - this.firstTime;
+ };
+
+  Component.prototype.getFinalMatrix = function(){
+
+    if(this.animations == null || this.animations.length == 0)
+        return this.matrix;
+
+    var tempT = 0;
+    var animIndex = 0;
+    var animTime = this.time;
+
+    for(var i = 0; i < this.animations.length; i++){
+        
+        tempT += this.animations[i].getTime();
+        animIndex = i;
+
+        if(this.time <= tempT){
+            animTime = this.animations[i].getTime() - (tempT - this.time);
+            break;
+        }
+    }
+
+    var matAnim = this.animations[animIndex].getTransformation(animTime);
+
+    var tempMat = mat4.create();
+
+     mat4.multiply(tempMat,this.matrix,matAnim);
+
+     return tempMat;
+ };
