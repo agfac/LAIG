@@ -830,15 +830,15 @@ MySceneGraph.prototype.parsePrimitive = function(element){
 		case "sphere":
 		primitive = this.parseSphere(child);
 		break;
-		case "plane":
-		primitive = this.parsePlane(child);
-		break;
-		case "patch":
-		primitive = this.parsePatch(child);
-		break;
-		case "chessboard":
-		primitive = this.parseChessboard(child);
-		break;
+		// case "plane":
+		// primitive = this.parsePlane(child);
+		// break;
+		// case "patch":
+		// primitive = this.parsePatch(child);
+		// break;
+		// case "chessboard":
+		// primitive = this.parseChessboard(child);
+		// break;
 	}
 
 	//Verify duplicated primitives
