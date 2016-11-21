@@ -45,7 +45,7 @@ Component.prototype.constructor = Component;
 Component.prototype.display = function(material, texture){
 
 	this.scene.pushMatrix();
-	this.scene.multMatrix(this.matrix);
+	this.scene.multMatrix(this.getFinalMatrix());
 
 	var mat = this.material;
 
