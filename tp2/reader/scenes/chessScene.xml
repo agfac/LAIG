@@ -214,20 +214,21 @@
 
     </transformations>
 
-    <animations>
+     <animations>
     <!-- podem existir zero ou mais nós "animation" -->
     <!-- span é o tempo, em segundos, que a animação deve -->
     <!-- demorar. Nesta versão do formato DSX, type pode ter -->
     <!-- o valor "linear" ou "circular"; na animacao circular -->
     <!-- os angulos sao expressos em graus  -->
 
-    <animation id="LinearAnimation1" span="0.0" type="linear">
+    <animation id="LinearAnimation1" span="10" type="linear">
         <controlpoint xx="0.0" yy="0.0" zz="0.0"/>
         <controlpoint xx="1.0" yy="0.0" zz="0.0"/>
         <controlpoint xx="1.0" yy="1.0" zz="0.0"/>
     </animation>
     <animation id="CircularAnimation1" span="0.0" type="circular" centerx="5.0" centery="5.0" centerz="5.0" radius="0.5" startang="0.0" rotang="0.1" />
     </animations>
+
 
     <primitives>
 
@@ -282,7 +283,7 @@
             <!-- em OpenGL/GLUT; o cilindro deve adicionalmente ter tampas -->
              <torus inner="0.5" outer="1.0" slices="100" loops="50" />
         </primitive>
-        <primitive id="plane1">
+          <primitive id="plane1">
             <!-- Nova primitiva: plano, discretizado em grelha -->
             <!-- exemplo:                                -->
             <!-- <plane dimX="3" dimY="2" partsX="10" partsY="7"/> -->
