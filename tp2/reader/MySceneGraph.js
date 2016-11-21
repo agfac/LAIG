@@ -836,6 +836,9 @@ MySceneGraph.prototype.parsePrimitive = function(element){
 		case "patch":
 		primitive = this.parsePatch(child);
 		break;
+		case "vehicle":
+		primitive = new Vehicle(this.scene);
+		break;
 		case "chessboard":
 		primitive = this.parseChessboard(child);
 		break;
