@@ -120,7 +120,7 @@
         <texture id="texture_tree_top"  file="scenes/textures/tree_top.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_tree_body"  file="scenes/textures/tree_body.jpg" length_s="1.0" length_t="1.0" />
         <texture id="texture_tree_vase"  file="scenes/textures/vase.png" length_s="1.0" length_t="1.0" />
-        <texture id="texture_wood"  file="scenes/textures/wood.png" length_s="1.0" length_t="1.0" />
+        <texture id="texture_wood"  file="scenes/textures/wood.jpg" length_s="1.0" length_t="1.0" />
     </textures>
 
 
