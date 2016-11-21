@@ -222,11 +222,11 @@
     <!-- os angulos sao expressos em graus  -->
 
     <animation id="LinearAnimation1" span="10" type="linear">
-        <controlpoint xx="0.0" yy="0.0" zz="0.0"/>
-        <controlpoint xx="1.0" yy="0.0" zz="0.0"/>
-        <controlpoint xx="1.0" yy="1.0" zz="0.0"/>
+            <controlpoint xx="2" yy="0" zz="0"/>
+            <controlpoint xx="5" yy="0" zz="3"/>
+            <controlpoint xx="3" yy="0" zz="0"/>
     </animation>
-    <animation id="CircularAnimation1" span="0.0" type="circular" centerx="5.0" centery="5.0" centerz="5.0" radius="0.5" startang="0.0" rotang="0.1" />
+    <animation id="CircularAnimation1" span="5" type="circular" centerx="2.0" centery="2.0" centerz="2.0" radius="2.0" startang="10.0" rotang="70.0" />
     </animations>
 
 
@@ -309,6 +309,16 @@
             <!--      (2+1)*(3+1)=12 pontos              -->
             <patch orderU="2" orderV="3" partsU="7" partsV="9" >    
                 <controlpoint x="0.0" y="0.0" z="0.0" />
+                <controlpoint x="2.0" y="1.0" z="0.0" />   
+                <controlpoint x="0.0" y="0.0" z="0.0" />
+                <controlpoint x="2.0" y="1.0" z="0.0" />   
+                <controlpoint x="0.0" y="0.0" z="0.0" />
+                <controlpoint x="2.0" y="1.0" z="0.0" />   
+                <controlpoint x="0.0" y="0.0" z="0.0" />
+                <controlpoint x="2.0" y="1.0" z="0.0" />   
+                <controlpoint x="0.0" y="0.0" z="0.0" />
+                <controlpoint x="2.0" y="1.0" z="0.0" />   
+                <controlpoint x="0.0" y="0.0" z="0.0" />
                 <controlpoint x="2.0" y="1.0" z="0.0" />
             </patch>
         </primitive>
@@ -346,6 +356,7 @@
                 <!--<transformationref id="floor" /> -->
 
             </transformation>
+            <animation></animation>
             <!-- declaracao obrigatoria de pelo menos um material; -->
             <!-- o material id="inherit", mantem (herda) material do "pai" -->
             <!-- se varios materiais declarados, o default e' o -->
@@ -387,7 +398,10 @@
          <component id="tree">
             <transformation>
                 <translate x="2.0" y="0.0" z="18.0" />
-            </transformation>
+            </transformation> 
+            <animation>
+                <animationref id="LinearAnimation1" />
+            </animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -403,6 +417,7 @@
                 <translate x="0.0" y="6.0" z="0.0" />
                 <scale x="1.5" y="1.5" z="1.5" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -417,6 +432,7 @@
                 <scale x="0.4" y="5.0" z="0.4" />
                 <rotate axis="x" angle="-90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -431,6 +447,7 @@
                 <scale x="1.8" y="2.0" z="1.8" />
                 <rotate axis="x" angle="90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -444,6 +461,8 @@
             <transformation>
                 <translate x="16.0" y="0.0" z="4.5" />
             </transformation>
+            <animation>
+                <animationref id="CircularAnimation1" /></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -460,6 +479,7 @@
         <component id="puff_fragment_1">
             <transformation>
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
                 <material id="material_black" />
@@ -474,6 +494,7 @@
             <transformation>
                 <translate x="2.4" y="0.0" z="0.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
                 <material id="material_black" />
@@ -488,6 +509,7 @@
             <transformation>
                 <translate x="0.0" y="0.0" z="-2.4" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
                 <material id="material_black" />
@@ -502,6 +524,7 @@
             <transformation>
                 <translate x="2.4" y="0.0" z="-2.4" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
                 <material id="material_black" />
@@ -517,6 +540,7 @@
                 <translate x="1.2" y="2.0" z="-1.2" />
                 <scale x="3.0" y="1.0" z="3.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
             </materials>
@@ -530,6 +554,7 @@
                 <scale x="1.3" y="2.0" z="1.3" />
                 <rotate axis="x" angle="-90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -545,6 +570,7 @@
                 <scale x="2.5" y="1.9" z="2.5" />
                 <rotate axis="x" angle="90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material1" />
             </materials>
@@ -560,6 +586,7 @@
                 <translate x="12.0" y="3" z="18.0" />
                 <rotate axis="y" angle="180" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
                 <material id="material_black" />
@@ -579,6 +606,7 @@
             <transformation>
                 <translate x="8.0" y="3" z="3.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
                 <material id="material_black" />
@@ -598,6 +626,7 @@
         <component id="chair_top">
             <transformation>
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
             </materials>
@@ -612,6 +641,7 @@
                 <translate x="0.1" y="1.0" z="3.55" />
                 <scale x="0.1" y="8.0" z="0.1" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -625,6 +655,7 @@
                 <translate x="3.55" y="1.0" z="3.55" />
                 <scale x="0.1" y="8.0" z="0.1" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -638,6 +669,7 @@
                 <translate x="1.8" y="1.0" z="0.1" />
                 <scale x="0.1" y="8.0" z="0.1" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -655,6 +687,7 @@
                 <rotate axis="z" angle="90" />
                 <scale x="0.08" y="7.3" z="0.08" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -672,6 +705,7 @@
                 <rotate axis="z" angle="90" />
                 <scale x="0.08" y="7.3" z="0.08" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -688,6 +722,7 @@
                 <translate x="0.0" y="0.0" z="1.0" />
                 <rotate axis="x" angle="-90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -703,6 +738,7 @@
         <component id="triangle">
             <transformation>
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -716,6 +752,7 @@
                 <translate x="1.0" y="0.0" z="-0.5" />
                 <rotate axis="y" angle="180" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -731,6 +768,7 @@
                 <rotate axis="z" angle="30" />
                 <rotate axis="y" angle="90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -746,6 +784,7 @@
                 <rotate axis="z" angle="-30" />
                 <rotate axis="y" angle="-90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -760,6 +799,7 @@
                 <translate x="0.0" y="0.0" z="-1.0" />
                 <rotate axis="x" angle="90" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -777,6 +817,7 @@
                 <scale x="20.0" y="1.0" z="20.0" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_floor" />
             </materials>
@@ -789,6 +830,7 @@
         <!-- ........................................ Wall ........................................-->
         <component id="wall">
             <transformation></transformation>
+            <animation></animation>
             <materials>
                 <material id="material_wall" />
             </materials>
@@ -802,6 +844,7 @@
             <transformation>
                <transformationref id="wall_transformation" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -816,6 +859,7 @@
                 <translate x="-20.0" y="0.0" z="0.0" />
                 <scale x="20.0" y="10.0" z="0.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -829,6 +873,7 @@
             <transformation>
                 <translate x="5.0" y="0.0" z="13.5" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -844,6 +889,7 @@
             <transformation>
                 <scale x="2.0" y="2.0" z="2" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_gray" />
                 <material id="material_black" />
@@ -864,6 +910,7 @@
                 <translate x="0.0" y="2.0" z="0.0" />
                 <scale x="5.0" y="0.3" z="3" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -879,6 +926,7 @@
                 <translate x="4.9" y="0.0" z="0.0" />
                 <scale x="0.1" y="2.0" z="0.1" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -891,6 +939,7 @@
             <transformation>
                 <scale x="0.1" y="2.0" z="0.1" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -904,6 +953,7 @@
                 <translate x="4.9" y="0.0" z="-2.9" />
                 <scale x="0.1" y="2.0" z="0.1" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -917,6 +967,7 @@
                 <translate x="0.0" y="0.0" z="-2.9" />
                 <scale x="0.1" y="2.0" z="0.1" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -932,6 +983,7 @@
                 <translate x="3.25" y="4.7" z="-1.30" />
                 <scale x="1.2" y="1.0" z="1.2" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_chess" />
             </materials>
@@ -970,6 +1022,7 @@
                 <scale x="2.7" y="1.0" z="2.7" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -983,6 +1036,7 @@
             <transformation>
                 <translate x="0.17" y="0.0" z="-0.17" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -996,6 +1050,7 @@
             <transformation>
                 <translate x="0.84" y="0.0" z="-0.17" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1009,6 +1064,7 @@
             <transformation>
                 <translate x="1.51" y="0.0" z="-0.17" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1022,6 +1078,7 @@
             <transformation>
                 <translate x="2.18" y="0.0" z="-0.17" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1035,6 +1092,7 @@
             <transformation>
                 <translate x="0.505" y="0.0" z="-0.505" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1048,6 +1106,7 @@
             <transformation>
                 <translate x="1.175" y="0.0" z="-0.505" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1061,6 +1120,7 @@
             <transformation>
                 <translate x="1.845" y="0.0" z="-0.505" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1074,6 +1134,7 @@
             <transformation>
                 <translate x="2.515" y="0.0" z="-0.505" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1087,6 +1148,7 @@
             <transformation>
                 <translate x="0.17" y="0.0" z="-0.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1100,6 +1162,7 @@
             <transformation>
                 <translate x="0.84" y="0.0" z="-0.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1113,6 +1176,7 @@
             <transformation>
                 <translate x="1.51" y="0.0" z="-0.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1126,6 +1190,7 @@
             <transformation>
                 <translate x="2.18" y="0.0" z="-0.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_white_piece" />
                 <material id="material_black_piece" />
@@ -1141,6 +1206,7 @@
             <transformation>
                 <translate x="0.17" y="0.0" z="-2.53" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1154,6 +1220,7 @@
             <transformation>
                 <translate x="0.84" y="0.0" z="-2.53" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1167,6 +1234,7 @@
             <transformation>
                 <translate x="1.51" y="0.0" z="-2.53" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1180,6 +1248,7 @@
             <transformation>
                 <translate x="2.18" y="0.0" z="-2.53" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1193,6 +1262,7 @@
             <transformation>
                 <translate x="0.505" y="0.0" z="-2.20" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1206,6 +1276,7 @@
             <transformation>
                 <translate x="1.175" y="0.0" z="-2.20" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1219,6 +1290,7 @@
             <transformation>
                 <translate x="1.845" y="0.0" z="-2.20" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1232,6 +1304,7 @@
             <transformation>
                 <translate x="2.515" y="0.0" z="-2.20" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1245,6 +1318,7 @@
             <transformation>
                 <translate x="0.17" y="0.0" z="-1.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1258,6 +1332,7 @@
             <transformation>
                 <translate x="0.84" y="0.0" z="-1.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1271,6 +1346,7 @@
             <transformation>
                 <translate x="1.51" y="0.0" z="-1.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1284,6 +1360,7 @@
             <transformation>
                 <translate x="2.18" y="0.0" z="-1.85" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="material_black_piece" />
                 <material id="material_white_piece" />
@@ -1299,6 +1376,7 @@
             <transformation>
                 <scale x="0.3" y="0.5" z="0.3" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1319,6 +1397,7 @@
                 <scale x="0.5" y="0.1" z="0.5" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1333,6 +1412,7 @@
                 <scale x="0.4" y="0.5" z="0.4" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1347,6 +1427,7 @@
                 <scale x="0.3" y="0.1" z="0.3" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1361,6 +1442,7 @@
                 <scale x="0.2" y="0.9" z="0.2" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1375,6 +1457,7 @@
                 <scale x="0.15" y="0.25" z="0.15" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1388,6 +1471,7 @@
                 <translate x="0.0" y="1.32" z="0.0" />
                 <scale x="0.2" y="0.2" z="0.2" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1399,8 +1483,8 @@
 
         <!-- Cube -->
          <component id="cube">
-            <transformation>
-            </transformation>
+            <transformation></transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1419,6 +1503,7 @@
                 <rotate axis="y" angle="-90.0" />
                 <translate x="-1.0" y="0.0" z="0.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1432,6 +1517,7 @@
                 <translate x="1.0" y="0.0" z="0.0" />
                 <rotate axis="y" angle="90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1445,6 +1531,7 @@
                 <translate x="0.0" y="1.0" z="0.0" />
                 <rotate axis="x" angle="-90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1458,6 +1545,7 @@
                 <translate x="0.0" y="0.0" z="-1.0" />
                 <rotate axis="x" angle="90.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1469,6 +1557,7 @@
         <component id="cube_z">
             <transformation>
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
@@ -1482,6 +1571,7 @@
                 <translate x="1.0" y="0.0" z="-1.0" />
                 <rotate axis="y" angle="180.0" />
             </transformation>
+            <animation></animation>
             <materials>
                 <material id="inherit" />
             </materials>
