@@ -709,7 +709,7 @@ MySceneGraph.prototype.parseAnimationLinear = function(element){
 		if(child.tagName != 'controlpoint')
 			return "Error! in animation id:[ " + element.id + " ] Expecting controlpoint, got " + child.tagName;
 
-		points.push(this.getVector3FromElement2(child,"xx","yy","zz"));
+		points.push(this.getVectorXYZFromElement2(child,"xx","yy","zz"));
 
 	}
 
