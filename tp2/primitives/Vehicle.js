@@ -1,9 +1,6 @@
 function Vehicle(scene) {
 	CGFobject.call(this, scene);
 
-	this.defaultTexture = new CGFappearance(scene);
-    this.defaultTexture.loadTexture("scenes/textures/helices.jpg");
-
 	this.leftPropeller = new Cylinder(this.scene, 1.5, 1.5 , 0.2, 50, 30);
 	this.rightPropeller = new Cylinder(this.scene, 1.5, 1.5 , 0.2, 50, 30);
 	this.leftSupport = new Cylinder(this.scene, 0.2, 0.2 , 6, 50, 30);
