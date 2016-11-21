@@ -227,7 +227,7 @@
             <controlpoint xx="5" yy="0" zz="3"/>
             <controlpoint xx="3" yy="0" zz="0"/>
     </animation>
-    <animation id="CircularAnimation1" span="3" type="circular" centerx="2.0" centery="2.0" centerz="2.0" radius="2.0" startang="10.0" rotang="70.0" />
+    <animation id="CircularAnimation1" span="3" type="circular" centerx="2.0" centery="0.0" centerz="2.0" radius="2.0" startang="10.0" rotang="70.0" />
     
     <animation id="vehicleAnimation1" span="5" type="linear">
             <controlpoint xx="3" yy="8" zz="3"/>
