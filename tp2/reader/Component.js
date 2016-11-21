@@ -109,9 +109,9 @@ Component.prototype.update = function(currTime){
     }
 
     this.time = currTime - this.firstTime;
- };
+};
 
-  Component.prototype.getFinalMatrix = function(){
+Component.prototype.getFinalMatrix = function(){
 
     if(this.animations == null || this.animations.length == 0)
         return this.matrix;
@@ -135,7 +135,7 @@ Component.prototype.update = function(currTime){
 
     var tempMat = mat4.create();
 
-     mat4.multiply(tempMat,this.matrix,matAnim);
+    mat4.multiply(tempMat,this.matrix,matAnim);
 
-     return tempMat;
- };
+    return tempMat;
+};

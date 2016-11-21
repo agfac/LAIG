@@ -16,7 +16,7 @@ function Chessboard(scene, du, dv, text, su, sv, c1, c2, cs) {
     this.selecCor = cs;
     this.plane = new Plane(scene, 1.0, 1.0, this.uDivs * 5, this.vDivs * 5);
 
-    this.shader = new CGFshader(this.scene.gl, "shaders/chessboard.vert", "shaders/chessboard.frag");
+    this.shader = new CGFshader(this.scene.gl, "../shaders/chessboard.vert", "../shaders/chessboard.frag");
 
     this.shader.setUniformsValues({ selected: [this.selecPos.u, this.selecPos.v],
                                     size: [du, dv],
@@ -40,9 +40,22 @@ function Chessboard(scene, du, dv, text, su, sv, c1, c2, cs) {
 
  Chessboard.prototype.display = function(){
 
+    this.newX += 0.1;
+
+    if(this.newX > 1){
+      this.selectPosition( this.newY % this.uDivs , Math.floor(this.newY / this.uDivs));
+      
+      this.newY++;
+      
+    if (this.newY > this.uDivs * this.vDivs - 1)
+        this.newY = 0;
+      
+      this.newX = 0;
+    }
+
     this.scene.setActiveShader(this.shader);
 
-    this.text.bind(0);
+    // this.text.bind(1);
 
     this.plane.display();
 

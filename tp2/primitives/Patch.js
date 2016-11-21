@@ -1,4 +1,4 @@
-function Patch(scene,orderU, orderV, partsU, partsV,controlPoints){
+function Patch(scene, orderU, orderV, partsU, partsV, controlPoints){
 
     this.scene = scene;
     this.orderU = orderU;

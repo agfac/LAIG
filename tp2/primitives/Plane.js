@@ -20,7 +20,7 @@ function Plane(scene,dimX, dimY, partsX, partsY){
                     ]
                 ]);
 
-    CGFnurbsObject.call(this,scene,SurfFunc,partsX,partsY);
+    CGFnurbsObject.call(this, scene, SurfFunc, partsX, partsY);
 };
 
 Plane.prototype = Object.create(CGFnurbsObject.prototype);

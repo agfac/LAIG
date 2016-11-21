@@ -33,7 +33,8 @@ CircularAnimation.prototype.getLength = function(p1, p2){
 
 CircularAnimation.prototype.getTransformation = function(time) {
     
-    if(time > this.totalTime) time = this.totalTime;
+    if(time > this.totalTime) 
+        time = this.totalTime;
 
     var currDist = time * this.velocity;
 
