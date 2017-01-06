@@ -1,0 +1,53 @@
+//From https://github.com/EvanHahn/ScriptInclude
+include=function(){function f(){var a=this.readyState;(!a||/ded|te/.test(a))&&(c--,!c&&e&&d())}var a=arguments,b=document,c=a.length,d=a[c-1],e=d.call;e&&c--;for(var g,h=0;c>h;h++)g=b.createElement("script"),g.src=arguments[h],g.async=!0,g.onload=g.onerror=g.onreadystatechange=f,(b.head||b.getElementsByTagName("head")[0]).appendChild(g)};
+serialInclude=function(a){var b=console,c=serialInclude.l;if(a.length>0)c.splice(0,0,a);else b.log("Done!");if(c.length>0){if(c[0].length>1){var d=c[0].splice(0,1);b.log("Loading "+d+"...");include(d,function(){serialInclude([]);});}else{var e=c[0][0];c.splice(0,1);e.call();};}else b.log("Finished.");};serialInclude.l=new Array();
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+    function(m,key,value) {
+      vars[decodeURIComponent(key)] = decodeURIComponent(value);
+    });
+    return vars;
+}	 
+
+serialInclude(['../communication/connection.js',  '../lib/CGF.js', 'XMLscene.js', 'MySceneGraph.js', 'Component.js', '../primitives/Rectangle.js', 'Interface.js', '../primitives/Triangle.js', '../primitives/Cylinder.js','../primitives/Sphere.js', '../primitives/Torus.js', '../primitives/Plane.js', '../primitives/Patch.js', '../primitives/Chessboard.js','../animation/Animation.js', '../animation/LinearAnimation.js', '../animation/CircularAnimation.js', '../primitives/Vehicle.js', '../primitives/Display.js',
+    '../animator/Animator.js', '../animator/Keyframe.js', '../animator/Sequence.js', '../animator/Sequencer.js', '../animator/Transitions.js',
+    '../game/Body.js', '../game/Board.js', '../game/Bell.js', '../game/Cell.js', '../game/Clock.js', '../game/Logic.js', '../game/Score.js', '../game/Timer.js',
+
+
+main=function()
+{
+	// Standard application, scene and interface setup
+    var app = new CGFapplication(document.body);
+    var myScene = new XMLscene();
+
+    var scenes =  ['gamescene1.dsx', 'gamescene2.dsx'];
+    myScene.graphsNames = scenes;
+
+    var myInterface = new Interface();
+
+    app.init();
+
+    app.setScene(myScene);
+    app.setInterface(myInterface);
+	myScene.setInterface(myInterface);
+    myInterface.setActiveCamera(myScene.camera);
+
+	// get file name provided in URL, e.g. http://localhost/myproj/?file=myfile.xml 
+	// or use "demo.xml" as default (assumes files in subfolder "scenes", check MySceneGraph constructor) 
+	
+	var filename=getUrlVars()['file'] || "chessScene.xml";
+
+	// create and load graph, and associate it to scene. 
+	// Check console for loading errors
+	
+    for(var k = 0; k < scenes.length; k++){
+        var myGraph = new MySceneGraph(scenes[k], myScene);
+    }
+	
+	// start
+    app.run();
+}
+
+]);

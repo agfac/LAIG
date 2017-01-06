@@ -1,9 +1,10 @@
 function MySceneGraph(filename, scene) {
 	this.loadedOk = null;
-
+	this.name = filename;
+	
 	// Establish bidirectional references between scene and graph
 	this.scene = scene;
-	scene.graph=this;
+	this.scene.addGraph(this);
 
 	//Scene
 	this.sceneInfo = { root : "", axis_length : 0.0};
@@ -19,7 +20,7 @@ function MySceneGraph(filename, scene) {
 							doubleSided : 0};
 
 	//Lights
-	this.lightsIDs = [];
+	this.lightsName = [];
 	this.lights = {};
 	this.lightIndex = 0;
 	
@@ -40,6 +41,9 @@ function MySceneGraph(filename, scene) {
 
 	//Animations
 	this.animations = {};
+
+	//Dictionary to store all game related components
+	this.gameComponents = {};
 
 	// File reading
 	this.reader = new CGFXMLreader();
@@ -100,14 +104,15 @@ MySceneGraph.prototype.onXMLReady=function(){
 		return;
 	if(this.checkError(this.parseComponents(rootElement)))
 		return;
-
-	this.loadedOk=true;
+	if(this.checkError(this.parseGameComponents(rootElement)))
+		return;
 
 	this.createGraph();	
 
+	this.loadedOk=true;
+
 	// As the graph loaded ok, signal the scene so that any additional initialization depending on the graph can take place
-	if(this.loadedOk)
-		this.scene.onGraphLoaded();
+	this.scene.onGraphLoaded();
 };
 
 /*
@@ -127,14 +132,14 @@ MySceneGraph.prototype.parseScene = function(rootElement){
 		return "scene element is MISSING or more than one element";
 
 	//Check if first element is scene
-	var scene = elems[0];
-	if(scene != rootElement.children[0])
-		return "Expected 'scene' as first element but got : " + rootElement.children[0].nodeName;
+	if(elems[0] != rootElement.children[0])
+		console.warn("Expected 'scene' (first element) but got : " + rootElement.children[0].nodeName);
 
+	var scene = elems[0];
 	this.sceneInfo.root = this.reader.getString(scene,'root');
 	this.sceneInfo.axis_length = this.reader.getFloat(scene,'axis_length');
 
-	console.log("Root Id is : " + this.sceneInfo.root + ", Axis length is: " + this.sceneInfo.axis_length);
+	console.log("Root Name is : " + this.sceneInfo.root + " Axis length is: " + this.sceneInfo.axis_length);
 };
 
 /*
@@ -156,7 +161,7 @@ MySceneGraph.prototype.parseViews = function(rootElement){
 	//Check if second element is views
 	var views = elems[0];
 	if(views != rootElement.children[1])
-		return "Expected 'views' as second element but got : " + rootElement.children[1].nodeName;
+		console.warn("Expected 'views' (second element) but got : " + rootElement.children[1].nodeName);
 	
 	this.views.default = this.reader.getString(views,'default');
 
@@ -215,6 +220,9 @@ MySceneGraph.prototype.parseViews = function(rootElement){
 		this.views.defaultID = this.views.childs.length;
 
 	this.views.childs.push(view);
+
+	if(!this.currentView)
+		this.currentView = view;
 };
 
 /*
@@ -235,7 +243,7 @@ MySceneGraph.prototype.parseIllumination = function(rootElement){
 	//Check if third element is illumination
 	var illum = elems[0];
 	if(illum != rootElement.children[2])
-		return "Expected 'illumination' as third element but got : " + rootElement.children[2].nodeName;
+		console.warn( "Expected 'illumination' (third element) but got : " + rootElement.children[2].nodeName);
 
 	this.illumination.doubleSided = this.reader.getInteger(illum, "doublesided");
 	this.illumination.local = this.reader.getInteger(illum, "local");
@@ -279,12 +287,14 @@ MySceneGraph.prototype.parseLights = function(rootElement){
 	//Check if forth element is lights
 	var lights = elems[0];
 	if(lights != rootElement.children[3])
-		return "Expected 'lights' as forth element but got : " + rootElement.children[3].nodeName;
+		console.warn("Expected 'lights' (forth element) but got : " + rootElement.children[3].nodeName);
 
 	//Check if there is at least one light
 	if(lights.children.length < 1)
 		return "Missing lights please specify at least one 'omni' and/or 'spot'";
-	
+	else if (lights.children.length > this.scene.lights.length)
+		return "Lights limit is " + this.scene.lights.length + ", please remove some lights.";
+
 	var nNodes = lights.children.length;
 
 	for(var i = 0; i < nNodes; i++){
@@ -321,31 +331,29 @@ MySceneGraph.prototype.parseOmniLights = function(element){
 		console.error("Duplicate light id found : " + element.id);
 
 	var enable = this.reader.getBoolean(element, "enabled") || 0;
-	var omni = this.scene.lights[this.lightIndex];
-
-	omni.disable();
-	omni.setVisible(true);
-
-	if(enable == 1)
-		this.scene.lights[this.lightIndex].enable();
 
 	var location = this.getVectorXYZW(element.getElementsByTagName("location")[0]);
-	omni.setPosition(location.x,location.y,location.z,location.w);
-
 	var ambient =  this.getRGBAFromElement(element.getElementsByTagName("ambient")[0]);
-	omni.setAmbient(ambient.r,ambient.g,ambient.b,ambient.a);
-
 	var diffuse = this.getRGBAFromElement(element.getElementsByTagName("diffuse")[0]);
-	omni.setDiffuse(diffuse.r,diffuse.g,diffuse.b,diffuse.a);
-
 	var specular = this.getRGBAFromElement(element.getElementsByTagName("specular")[0]);
-	omni.setSpecular(specular.r,specular.g,specular.b,specular.a);
+
+	var data = {
+		type : "omni",
+		index : this.lightIndex, //omni || spot
+		enable : enable,
+		location : location,
+		ambient : ambient,
+		diffuse : diffuse,
+		specular : specular
+	}
+
+	var omni = this.scene.lights[this.lightIndex];
 
 	//Check error
 	console.log("Omni Added: id: " + omni.id + " enable : " + enable + " location: " + this.printVectorXYZ(location) + " ambient: " + this.printRGBA(ambient) + " diffuse: " + this.printRGBA(diffuse) + " specular: " + this.printRGBA(specular));
 
-	this.lightsIDs.push(element.id);
-	this.lights[element.id] = omni;
+	this.lightsName.push(element.id);
+	this.lights[element.id] = data;
 	this.lightIndex++;
 	omni.update();
 };
@@ -371,50 +379,52 @@ MySceneGraph.prototype.parseSpotLights = function(element){
 	if(this.lights[element.id] != null)
 		console.error("Duplicate light id found : " + element.id);
 
-	var spot = this.scene.lights[this.lightIndex];
 	var enable = this.reader.getBoolean(element, "enabled") || 0;
 	
-	spot.disable();
-	spot.setVisible(true);
+	var location = this.getVectorXYZ(element.getElementsByTagName("location")[0]);
+	location = {
+		x: location.x,
+		y: location.y,
+		z: location.z,
+		w: 1
+	};
 
-	if(enable == 1)
-		spot.enable();
+	var ambient =  this.getRGBAFromElement(element.getElementsByTagName("ambient")[0]);
+	var diffuse = this.getRGBAFromElement(element.getElementsByTagName("diffuse")[0]);
+	var specular = this.getRGBAFromElement(element.getElementsByTagName("specular")[0]);
 
 	var angle = this.reader.getFloat(element,"angle") || 0.0;
-	angle *= Math.PI/180;
-	spot.setSpotCutOff(angle);
-
-	var exponent = this.reader.getFloat(element,"exponent") || 0.0;
-	spot.setSpotExponent(exponent);
-
-	var target = this.getVectorXYZ(element.getElementsByTagName("target")[0]);
-	var location = this.getVectorXYZ(element.getElementsByTagName("location")[0]);
-	spot.setPosition(location.x,location.y,location.z,1);
 	
-	//Direction of the spot light = target - location
+	var exponent = this.reader.getFloat(element,"exponent") || 0.0;
+	var target = this.getVectorXYZ(element.getElementsByTagName("target")[0]);
+	
 	var direction = {
 		x : target.x - location.x,
 		y : target.y - location.y,
 		z : target.z - location.z
 	}
-	spot.setSpotDirection(direction.x,direction.y,direction.z);
 
-	var ambient =  this.getRGBAFromElement(element.getElementsByTagName("ambient")[0]);
-	spot.setAmbient(ambient.r,ambient.g,ambient.b,ambient.a);
+	var data = {
+		type : "spot",//omni || spot
+		index : this.lightIndex,
+		enable : enable,
+		location : location,
+		ambient : ambient,
+		diffuse : diffuse,
+		specular : specular,
+		angle : angle,
+		exponent : exponent,
+		direction : direction
+	}
 
-	var diffuse = this.getRGBAFromElement(element.getElementsByTagName("diffuse")[0]);
-	spot.setDiffuse(diffuse.r,diffuse.g,diffuse.b,diffuse.a);
-
-	var specular = this.getRGBAFromElement(element.getElementsByTagName("specular")[0]);
-	spot.setSpecular(specular.r,specular.g,specular.b,specular.a);
+	var spot = this.scene.lights[this.lightIndex];
 
 	//Check error
 	console.log("Spot Added: id: " + spot.id + " enable : " + enable + " angle: " + angle + " exponent: " + exponent + " target: " +  this.printVectorXYZ(target) + " location: " + this.printVectorXYZ(location) + " ambient: " + this.printRGBA(ambient) + " diffuse: " + this.printRGBA(diffuse) + " specular: " + this.printRGBA(specular));
 
-	this.lightsIDs.push(element.id);
-	this.lights[element.id] = spot;
+	this.lightsName.push(element.id);
+	this.lights[element.id] = data;
 	this.lightIndex++;
-	spot.update();
 };
 
 /*
@@ -442,7 +452,7 @@ MySceneGraph.prototype.parseTextures = function(rootElement){
 
 	//Check if fifth element is textures
 	if(texts != rootElement.children[4])
-		return "Expected 'textures' as fifth element but got : " + rootElement.children[4].nodeName;
+		console.warn("Expected 'textures' (fifth element) but got : " + rootElement.children[4].nodeName);
 
 	var nNodes = texts.children.length;
 
@@ -488,7 +498,7 @@ MySceneGraph.prototype.parseMaterials = function(rootElement){
 
 	//Check if sixth element is materials
 	if(materials != rootElement.children[5])
-		return "Expected 'materials' as sixth element but got : " + rootElement.children[5].nodeName;
+		console.warn("Expected 'materials' (sixth element) but got : " + rootElement.children[5].nodeName);
 
 	var nNodes = materials.children.length;
 
@@ -564,7 +574,7 @@ MySceneGraph.prototype.parseTransformations = function(rootElement){
 
 	//Check if seventh element is materials
 	if(transformations != rootElement.children[6])
-		return "Expected 'transformations' as seventh element but got : " + rootElement.children[6].nodeName;
+		console.warn("Expected 'transformations' (seventh element) but got : " + rootElement.children[6].nodeName);
 
 	var nNodes = transformations.children.length;
 
@@ -648,13 +658,13 @@ MySceneGraph.prototype.parseAnimations = function(rootElement){
 
 	var elems = rootElement.getElementsByTagName("animations");
 
-	if(elems == null || elems > 1){
+	if(elems == null || elems > 1)
 		return "There must be only one <animations> block!";
-	}
+	
 
-	if(elems[0] != rootElement.children[7]){
+	if(elems[0] != rootElement.children[7])
 		console.warn("Expected 'components' (eigth element) but got : " + rootElement.children[8].nodeName);
-	}
+	
 
 	var block = elems[0];
 
@@ -772,7 +782,7 @@ MySceneGraph.prototype.parsePrimitives = function(rootElement){
 
 	//Check if eigth element is primitives
 	if(primitives != rootElement.children[8])
-		return "Expected 'primitives' as eigth element but got : " + rootElement.children[7].nodeName;
+		console.warn("Expected 'primitives' (ninth element) but got : " + rootElement.children[7].nodeName);
 
 	var nnodes = primitives.children.length;
 	var error;
@@ -1108,7 +1118,7 @@ MySceneGraph.prototype.parseComponents = function(rootElement){
 
 	//Check if ninth element is components
 	if(components != rootElement.children[9])
-		return "Expected 'components' as tenth element but got : " + rootElement.children[8].nodeName;
+		console.warn("Expected 'components' (tenth element) but got : " + rootElement.children[8].nodeName);
 
 	var nnodes = components.children.length;
 	var error;
@@ -1289,13 +1299,80 @@ MySceneGraph.prototype.parseComponentAnimation = function(element){
 
 		var animation = this.animations[animref.id];
 
-		if(animation == null){
+		if(animation == null)
 			console.error("Animation ID:"+ animref.id + " don't exist!");
-		}else
+		else
 			res.push(animation);
 	}
 	
 	return res;
+};
+
+/*
+========================= GAME COMPONENTS =========================
+*/
+/* 	Function to parse the element: GameComponents
+	Parses the following elements:
+	boardPosition
+	cell
+	body
+*/
+MySceneGraph.prototype.parseGameComponents = function(rootElement){
+
+	var elems = rootElement.getElementsByTagName('gamecomponents');
+
+	if(elems == null || elems.length != 1)
+		return "gamecomponents element is MISSING or more than one element";
+	
+	var components = elems[0];
+
+	var nnodes = components.children.length;
+	var error;
+	
+	for(var i = 0; i < nnodes; i++){
+
+		var child = components.children[i];
+
+		var component=null;
+
+		switch(child.tagName){
+			case 'boardLocation':
+			case 'body':
+			case 'cell':
+			case 'bell':
+				var componentID = this.reader.getString(child, 'component');
+				component = this.components[componentID];
+			break;
+			case 'player1':
+			case 'player2':
+			case 'neutral':
+			case 'clock':
+			case 'numbers':
+				component = { material:null, texture:null}
+				var materialID = this.reader.getString(child, 'material');
+				var textureID = this.reader.getString(child, 'texture');
+
+				component.material = this.materials[materialID];
+				
+				if(textureID != "none")
+					component.texture = this.textures[textureID].texFile;
+				else
+					component.texture = null;
+
+				break;
+			default:
+				component = null;
+				break;
+		}
+
+		if(component){
+			var index = (child.tagName == 'player1')? 0 : (child.tagName == 'player2')? 1 : (child.tagName == 'neutral')? -1 : child.tagName;
+			this.gameComponents[index] = component;
+		}
+
+		if(error)
+			return error;
+	}
 };
 
 /*
@@ -1305,7 +1382,7 @@ MySceneGraph.prototype.parseComponentAnimation = function(element){
 MySceneGraph.prototype.createGraph = function(){
 
 	if(this.components[this.sceneInfo.root] == null)
-		console.error("Root must be an existing component! Root is : " + this.sceneInfo.root);
+		console.error("Graph must have a root element please specify one in your dsx file");
 
 	for(var key in this.components){
 
@@ -1526,7 +1603,7 @@ MySceneGraph.prototype.getCamera = function(){
 	else
 		this.views.defaultID = 0;
 
-	return new CGFcamera(view.angle, view.near, view.far, vec3.fromValues(view.from.x, view.from.y, view.from.z), vec3.fromValues(view.to.x, view.to.y, view.to.z));
+	return view;
 };
 
 MySceneGraph.prototype.getRoot = function(){
@@ -1541,5 +1618,39 @@ MySceneGraph.prototype.update = function(currTime){
 		var component = this.components[key];
 		
 		component.update(currTime);
+	}
+};
+
+MySceneGraph.prototype.loadLights = function(){
+
+	for(var key in this.lights){
+		
+		var lightData = this.lights[key];
+		var light = this.scene.lights[lightData.index];
+
+		light.disable();
+		light.setVisible(true);
+		
+		if(lightData.enable)
+			light.enable();
+
+		light.setPosition(lightData.location.x, lightData.location.y, lightData.location.z, lightData.location.w);
+		
+		light.setAmbient(lightData.ambient.r, lightData.ambient.g, lightData.ambient.b, lightData.ambient.a);
+		
+		light.setDiffuse(lightData.diffuse.r, lightData.diffuse.g, lightData.diffuse.b, lightData.diffuse.a);
+		
+		light.setSpecular(lightData.specular.r, lightData.specular.g, lightData.specular.b, lightData.specular.a);
+
+		light.update();
+
+		if(lightData.type == "omni")
+			continue;
+
+		light.setSpotCutOff(lightData.angle);
+		light.setSpotExponent(lightData.exponent);
+		light.setSpotDirection(lightData.direction.x, lightData.direction.y, lightData.direction.z);
+
+		light.update();
 	}
 };

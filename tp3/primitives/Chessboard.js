@@ -39,7 +39,7 @@ function Chessboard(scene, du, dv, text, su, sv, c1, c2, cs) {
  };
 
 Chessboard.prototype.display = function(){
-
+/*
     this.newX += 0.1;
 
     if(this.newX > 1){
@@ -53,7 +53,7 @@ Chessboard.prototype.display = function(){
       
         this.newX = 0;
     }
-
+*/
     this.scene.setActiveShader(this.shader);
 
     // this.text.bind(1);
