@@ -238,7 +238,7 @@ Board.prototype.setPieces = function(pieces){
 	this.pieces['boardLocation'].primitives.push(this);
 };
 
-Board.prototype.getPosition = function(radius,angle, team){
+Board.prototype.getPosition = function(line, col, team){
 	
 	var t = -1;
 	
@@ -246,11 +246,11 @@ Board.prototype.getPosition = function(radius,angle, team){
 		t=1;
 
 	var res ={
-		x: radius* Math.cos(angle) * t,
-		y: -0.2,
-		z: radius* Math.sin(angle) * t
+		x: (-4.5 + col) * t,
+		y: 0,
+		z: (-4.5 + line) * t
 	};
-	
+
 	return res;
 };
 
@@ -427,7 +427,7 @@ Board.prototype.selectCell = function(object){
 	this.selectObject(this.selected, 'cell', object);
 };
 
-Board.prototype.getBodyPosition = function(piece, dist = 0){
+Board.prototype.getBodyPosition = function(piece, line, col, dist = 0){
 	
 	var id = piece.id;
 	var team = piece.team;
@@ -437,7 +437,7 @@ Board.prototype.getBodyPosition = function(piece, dist = 0){
 	var radius = this.width - 2;
 	var angle = Math.PI/1.5;
 	var offset = Math.PI - angle/2;
-	var pos = this.getPosition(radius, angle * k + offset, team);
+	var pos = this.getPosition(line, col, team);
 	pos.x += dist * ((team)? 1 : -1);
 	
 	return pos;
@@ -453,12 +453,26 @@ Board.prototype.initializePositions = function(){
 	
 	this.board =[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]];	
 	
-	for(var i = 0; i < this.checkers[this.BLACK].length; i ++){
-		
+	for(var i = 0, line = 1, col = 2; i < this.checkers[this.BLACK].length; i ++){
+
 			var blck = this.checkers[this.BLACK][i];
 			var wht = this.checkers[this.WHITE][i];
-			blck.spawnPosition(this.getBodyPosition(blck, 0));
-			wht.spawnPosition(this.getBodyPosition(wht, 0));
+			blck.spawnPosition(this.getBodyPosition(blck, line, col, 0));
+			wht.spawnPosition(this.getBodyPosition(wht, line, col, 0));
+
+			if(col == 8){
+				line++;
+				col = 1;
+				continue;
+			}
+
+			if(col == 7){
+				line++;
+				col = 2;
+				continue;
+			}
+
+			col+=2;
 	}
 	
 	var id = 0;
