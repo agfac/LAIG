@@ -48,12 +48,15 @@ Interface.prototype.init = function(application) {
 	var animationGroup = this.gui.addFolder("Animation");
 	var timelineSlider = animationGroup.add(this.scene.animator, 'animationTime', 0, this.scene.animator.animationMaxTime).step(0.1).listen();
 	var timeline = animationGroup.add(this.scene.animator, 'animationTime').max(0, this.scene.animator.animationMaxTime).step(0.1).listen();
+	
 	var updater1 = function(){
 		scene.animator.changingAnimationTime()
 	}
+	
 	var updater2 = function(){
 		scene.animator.changedAnimationTime()
 	}
+
 	timeline.onChange(updater1);
 	timeline.onFinishChange(updater2);
 
@@ -81,8 +84,9 @@ Interface.prototype.init = function(application) {
 
 	var optionsGroup = this.gui.addFolder("Options");
 	optionsGroup.add(this.scene.board,'mode', {'H vs H' : 'hh', 'H vs C' : 'hc', 'C vs H' : 'ch', 'C vs C' : 'cc'}).name("Mode");
+	
 	var difficultyGroup = optionsGroup.addFolder("Difficulty");
-	difficultyGroup.add(this.scene.board,'mode', {'Dificil' : 'd', 'Normal' : 'n', 'Facil' : 'f'}).name("Difficulty");
+	difficultyGroup.add(this.scene.board,'dificuldade', {'Dificil' : 'd', 'Normal' : 'n', 'Facil' : 'f'}).name("Difficulty");
 	
 	return true;
 };

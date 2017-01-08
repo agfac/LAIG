@@ -31,7 +31,7 @@ XMLscene.prototype.init = function(application){
 
     this.materialDefault = new CGFappearance(this);
 
-    this.axis=new CGFaxis(this);
+    this.axis = new CGFaxis(this);
 
     this.setUpdatePeriod(1);
 
@@ -39,17 +39,10 @@ XMLscene.prototype.init = function(application){
 
     this.setPickEnabled(true);
 
-    this.obj = new Sphere(this, 0.5, 3, 3);
-
-    this.obj.position = {x:0 , y:0 , z:0};
-
-    this.cylinder = new Cylinder(this, 1, 1, 1, 20, 20);
-
   	this.board = new Board(this, 12);
 
-  	for(var i = 0 ; i < this.lights.length; i++){
+  	for(var i = 0 ; i < this.lights.length; i++)
     	this.lightState.push(this.lights[i].enabled);
-  	}
 
   	this.currentView = null;
   	
@@ -78,7 +71,8 @@ XMLscene.prototype.addGraph = function(graph){
 };
 
 XMLscene.prototype.setInterface = function(interface){
-	this.interface = interface;
+	
+  this.interface = interface;
 };
 
 XMLscene.prototype.resetLights = function(){
@@ -121,6 +115,7 @@ XMLscene.prototype.update = function(currTime){
 };
 
 XMLscene.prototype.initCameras = function(){
+    
     this.camera = new CGFcamera(0.4, 0.1, 500, vec3.fromValues(15, 15, 15), vec3.fromValues(0, 0, 0));
 };
 
@@ -130,14 +125,12 @@ XMLscene.prototype.setDefaultAppearance = function(){
 	this.setDiffuse(0.2, 0.4, 0.8, 1.0);
   this.setSpecular(0.2, 0.4, 0.8, 1.0);
   this.setShininess(10.0);
-
 };
 
 XMLscene.prototype.getNextCamera = function(){
 	
   this.currentView = this.graph.getCamera();
 	this.cameraCanUpdate = true;
-
 };
 
 XMLscene.prototype.updateCamera = function(time){
@@ -233,9 +226,8 @@ XMLscene.prototype.updateGraph = function(){
   this.axis = new CGFaxis(this,this.graph.sceneInfo.axis_length,0.1);
 
 
-  for(var i = 0 ; i < this.lights.length; i++){
+  for(var i = 0 ; i < this.lights.length; i++)
     this.lightState[i] = this.lights[i].enabled;
-  }
 
   //this.nextCamera();
   
@@ -297,6 +289,7 @@ XMLscene.prototype.logPicking = function (){
 };
 
 XMLscene.prototype.changeHeaderText = function (string) {
+    
     document.getElementsByTagName('h1')[0].innerHTML = string;
 };
 

@@ -44,7 +44,7 @@ Sequencer.prototype.addKeyframe = function(sequenceName, keyframe){
 Sequencer.prototype.registerSequence = function(sequenceName, object, attribute){
 
 	if(!this.sequences[sequenceName])
-		this.sequences[sequenceName] = new Sequence(sequenceName, object,attribute);
+		this.sequences[sequenceName] = new Sequence(sequenceName, object, attribute);
 	else
 		console.warn("Sequence already exists!" + sequenceName);
 };

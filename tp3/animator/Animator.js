@@ -63,7 +63,7 @@ Animator.prototype.togglePlay = function(){
 
 	this.play = !this.play;
 	this.playBtn.name((this.play)? "Stop" : "Play");
-
+	
 //	this.playBtn.updateDisplay();
 
 	console.log(this.playBtn);

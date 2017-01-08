@@ -32,17 +32,17 @@ function Board(scene, pieceNumber) {
 	this.points[this.BLACK] = 0;
 	this.points[this.WHITE] = 0;
 	
-	this.mode = "cc";//Acrescentar mode "hc" "cc" "ch"
+	this.mode = 'hh';//Acrescentar mode "hc" "cc" "ch"
 	
-	this.dificuldade = [];
-	this.dificuldade[this.WHITE] = "op";//"notOp"
-	this.dificuldade[this.BLACK] = "op";//"notOp"
+	this.dificuldade = "n";
 	
 	this.skip_index = 0;
 	this.move_index = 1;
 
 	this.pieces =  null;
+	
 	this.cells = [];
+	
 	this.checkers = [];
 	this.checkers[this.BLACK] = [];
 	this.checkers[this.WHITE] = [];
@@ -205,11 +205,11 @@ Board.prototype.updateTimerValues = function(){
 	
 	this.timer.setTime(time);
 	//console.log("Plr Turn: ["+ this.lastPlayerTurn + "]" + this.playerTurn +" / " + this.currentPlayer + " T2:" + this.playerTurnTime);
-	
+	console.log("MODE: " + this.mode[this.lastPlayerTurn]);
 	if(this.lastPlayerTurn != -1){
 		if(t2 > this.roundTime){
 				this.endTurn();
-		} else if(this.mode[this.lastPlayerTurn] == "c" && this.isPlaying()){
+		} else if(this.mode[this.lastPlayerTurn] == "h" && this.isPlaying()){
 				this.doRound();
 		}
 	}else
@@ -238,7 +238,7 @@ Board.prototype.setPieces = function(pieces){
 	this.pieces['boardLocation'].primitives.push(this);
 };
 
-Board.prototype.getPosition = function(line, col, team){
+Board.prototype.getPosition = function(radius, angle, team){
 	
 	var t = -1;
 	
@@ -246,9 +246,9 @@ Board.prototype.getPosition = function(line, col, team){
 		t=1;
 
 	var res ={
-		x: (-4.5 + col) * t,
+		x: radius* Math.cos(angle) * t,
 		y: 0,
-		z: (-4.5 + line) * t
+		z: radius* Math.sin(angle) * t
 	};
 
 	return res;
@@ -265,50 +265,40 @@ Board.prototype.resetRound = function(){
 	if(this.selected.cell)
 		this.selected.cell.selected = false;
 
-	if(this.selected.member)
-		this.selected.member.selected = false;
-
 	this.selected.body = null;
 	this.selected.body2 = null;
 	this.selected.cell = null;
-	this.selected.member = null;
 };
 
 Board.prototype.doRound = function(){
 
 	var board = this;
 
-	var currPlayer = "preto";
+	var currPlayer = "b";
 	
 	if(this.WHITE == this.playerTurn)
-		currPlayer = "branco";
+		currPlayer = "w";
 
 	if(this.mode[this.playerTurn] == "c"){//Jogada Computador
 
 		this.logic.jogadaBot(currPlayer);
 
 	} else {//Jogada Humano
-
+		console.log("SELECTED BODY: " + this.selected.body);
+		console.log("SELECTED CELL: " + this.selected.cell);
 		if(this.selected.body && this.selected.cell){//Construir comando de movimento
-
+			console.log("AQUI");
 			this.logic.playerMovement(board,currPlayer);
 		}
 
-		if(this.selected.body2 && this.selected.member){//construir comando de evoluir
-
-			this.logic.playerEvolution(board,currPlayer);
-		}
-
-
-		this.logic.playerFamine(board,currPlayer);
 	}//Fim Jogada
 
 	//Verificar se o jogo acabou
 
-	this.logic.checkGameEnd(board,currPlayer);
+	// this.logic.checkGameEnd(board,currPlayer);
 
-	this.resetRound();
-	this.endTurn();
+	// this.resetRound();
+	// this.endTurn();
 };
 
 Board.prototype.gameOver = function (status) {
@@ -355,14 +345,6 @@ Board.prototype.getFreeBody = function () {
 	}
 };
 
-Board.prototype.getFreeMember = function (type) {//"CLAW" ou "LEG"
-	
-	for (var i = 0; i < this.members[this.playerTurn].length; i++) {
-		if(!this.members[this.playerTurn][i].parent)
-			return this.members[this.playerTurn][i];
-	}
-};
-
 Board.prototype.getBodyByID = function (id,enemy) {
 	
 	return this.checkers[enemy][id];
@@ -372,8 +354,33 @@ Board.prototype.setUp = function () {
 
 	this.setPoints(0,0);
 
-	this.checkers[this.BLACK][0].move(this.getCellAt(6,3));
-	this.checkers[this.WHITE][0].move(this.getCellAt(2,3));
+	this.checkers[this.BLACK][0].move(this.getCellAt(1,0));
+	this.checkers[this.BLACK][1].move(this.getCellAt(3,0));
+	this.checkers[this.BLACK][2].move(this.getCellAt(5,0));
+	this.checkers[this.BLACK][3].move(this.getCellAt(7,0));
+	this.checkers[this.BLACK][4].move(this.getCellAt(0,1));
+	this.checkers[this.BLACK][5].move(this.getCellAt(2,1));
+	this.checkers[this.BLACK][6].move(this.getCellAt(4,1));
+	this.checkers[this.BLACK][7].move(this.getCellAt(6,1));
+	this.checkers[this.BLACK][8].move(this.getCellAt(1,2));
+	this.checkers[this.BLACK][9].move(this.getCellAt(3,2));
+	this.checkers[this.BLACK][10].move(this.getCellAt(5,2));
+	this.checkers[this.BLACK][11].move(this.getCellAt(7,2));
+
+	this.checkers[this.WHITE][0].move(this.getCellAt(0,7));
+	this.checkers[this.WHITE][1].move(this.getCellAt(2,7));
+	this.checkers[this.WHITE][2].move(this.getCellAt(4,7));
+	this.checkers[this.WHITE][3].move(this.getCellAt(6,7));
+	this.checkers[this.WHITE][4].move(this.getCellAt(1,6));
+	this.checkers[this.WHITE][5].move(this.getCellAt(3,6));
+	this.checkers[this.WHITE][6].move(this.getCellAt(5,6));
+	this.checkers[this.WHITE][7].move(this.getCellAt(7,6));
+	this.checkers[this.WHITE][8].move(this.getCellAt(0,5));
+	this.checkers[this.WHITE][9].move(this.getCellAt(2,5));
+	this.checkers[this.WHITE][10].move(this.getCellAt(4,5));
+	this.checkers[this.WHITE][11].move(this.getCellAt(6,5));
+	// this.checkers[this.BLACK][9].move(this.getCellAt(6,4));
+	// this.checkers[this.WHITE][0].move(this.getCellAt(2,3));
 };
 
 Board.prototype.isPlaying = function(){
@@ -403,6 +410,7 @@ Board.prototype.selectBody = function(object){
 
 
 	this.selected.body = object;
+	
 	var v1 = (this.selected.body)? this.selected.body.id : "null";
 	var v2 = (this.selected.body2)? this.selected.body2.id : "null";
 };
@@ -427,17 +435,17 @@ Board.prototype.selectCell = function(object){
 	this.selectObject(this.selected, 'cell', object);
 };
 
-Board.prototype.getBodyPosition = function(piece, line, col, dist = 0){
+Board.prototype.getBodyPosition = function(piece, dist = 0){
 	
 	var id = piece.id;
 	var team = piece.team;
 
 	var k =  id/this.checkers[team].length;
 
-	var radius = this.width - 2;
+	var radius = this.width;
 	var angle = Math.PI/1.5;
 	var offset = Math.PI - angle/2;
-	var pos = this.getPosition(line, col, team);
+	var pos = this.getPosition(radius, angle * k + offset, team);
 	pos.x += dist * ((team)? 1 : -1);
 	
 	return pos;
@@ -451,28 +459,14 @@ Board.prototype.initializePositions = function(){
 	var cSpace = 1* this.half;
 	var dSpace = 0;
 	
-	this.board =[[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]];	
+	this.board =[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]];	
 	
-	for(var i = 0, line = 1, col = 2; i < this.checkers[this.BLACK].length; i ++){
+	for(var i = 0; i < this.checkers[this.BLACK].length; i ++){
 
 			var blck = this.checkers[this.BLACK][i];
 			var wht = this.checkers[this.WHITE][i];
-			blck.spawnPosition(this.getBodyPosition(blck, line, col, 0));
-			wht.spawnPosition(this.getBodyPosition(wht, line, col, 0));
-
-			if(col == 8){
-				line++;
-				col = 1;
-				continue;
-			}
-
-			if(col == 7){
-				line++;
-				col = 2;
-				continue;
-			}
-
-			col+=2;
+			blck.spawnPosition(this.getBodyPosition(blck, 0));
+			wht.spawnPosition(this.getBodyPosition(wht, 0));
 	}
 	
 	var id = 0;
@@ -480,7 +474,7 @@ Board.prototype.initializePositions = function(){
 	for(var y = 0; y < this.board.length; y++){
 		
 		var neg = 0;
-		for(var x = 1; x < this.board[y].length; x++){
+		for(var x = 0; x < this.board[y].length; x++){
 			if(this.board[y][x] == -1){
 				neg++;
 				continue;
@@ -494,15 +488,15 @@ Board.prototype.initializePositions = function(){
 			var j = y * this.half*2;
 			id++;
 			this.cells.push(new Cell(this.scene, this, id,
-				-this.width/2 - this.half + k, -this.width/2 + this.half + j,
+				-this.width/2 - this.half + k + 1, -this.width/2 + this.half + j + 1,
 			x,y, this.selectShader));
 		}
 	}
 
-	this.bell.setPosition({x:0.5, y: 2, z: -(this.width/2 + 2.4)});
-	this.timer.setPosition({x:0.5, y: 0, z: -(this.width/2 + 1.3)});
-	this.clock.setPosition({x:0.5, y:0, z: -(this.width/2 + 1.4)});
-	this.score.setPosition({x:0.5, y: 2, z: -(this.width/2 + 2.4)});
+	this.bell.setPosition({x:0, y: 2, z: -(this.width/2 + 2.4)});
+	this.timer.setPosition({x:0, y: 0, z: -(this.width/2 + 1.3)});
+	this.clock.setPosition({x:0, y:0, z: -(this.width/2 + 1.4)});
+	this.score.setPosition({x:0, y: 2, z: -(this.width/2 + 2.4)});
 };
 
 Board.prototype.registerCellPicking = function(){
@@ -514,15 +508,11 @@ Board.prototype.registerCellPicking = function(){
 };
 
 Board.prototype.clearPicking = function(){
-		
-	var max = Math.max(this.pieceNumber);
-	
-	for(var i = 0; i < max; i++){
-		if(i < this.pieceNumber){
+			
+	for(var i = 0; i < this.pieceNumber; i++){
 
 			this.checkers[this.BLACK][i].setPickID(-1);
 			this.checkers[this.WHITE][i].setPickID(-1);
-		}
 	}
 };
 
@@ -531,13 +521,9 @@ Board.prototype.registerPicking = function(){
 	this.scene.clearPickRegistration();
 	this.clearPicking();
 	
-	var max = Math.max(this.pieceNumber);
-
 	var idC = this.cells.length + 2;
 	
-	for(var i = 0; i < max; i++){
-		
-		idC++;
+	for(var i = 0; i < this.pieceNumber; i++){
 
 		if(i < this.pieceNumber)
 			this.checkers[this.playerTurn][i].setPickID(idC);
@@ -560,10 +546,7 @@ Board.prototype.display = function(){
 		for(var y = 0; y < this.cells.length; y++)
 			this.cells[y].display();
 
-		var max = Math.max(this.pieceNumber);
-
-
-		for(var x = 0; x < max; x++){
+		for(var x = 0; x < this.pieceNumber; x++){
 		
 			if(x < this.checkers[0].length){
 				this.checkers[this.BLACK][x].display();
@@ -579,23 +562,27 @@ Board.prototype.display = function(){
 Board.prototype.getGameString = function () {
 
 	var res = [];
-	var ht = 'ht';
-	var vazio = 'vazio';
+	var vazio = 'V';
 	
-	res.push(['zero','um','dois','tres','quatro']);
-	res.push(['a',vazio,vazio,vazio,vazio,'cinco']);
-	res.push(['b',vazio,vazio,vazio,vazio,vazio,'seis']);
-	res.push(['c',vazio,vazio,vazio,vazio,vazio,vazio,'sete']);
-	res.push(['d',vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
-	res.push(['e',ht,vazio,vazio,vazio,vazio,vazio,vazio]);
-	res.push(['f',ht,ht,vazio,vazio,vazio,vazio,vazio]);
-	res.push(['g',ht,ht,ht,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
+	res.push([vazio,vazio,vazio,vazio,vazio,vazio,vazio,vazio]);
 	
 	for(var j = 0; j < this.checkers.length; j++){
 		for(var i = 0; i < this.checkers[j].length; i++){
 			if(this.checkers[j][i].currentCell){
-				var adaptoid = this.checkers[j][i];
-				res[adaptoid.boardPosition.y + 1][adaptoid.boardPosition.x] = adaptoid.getBodyString(i);
+				var ch = this.checkers[j][i];
+				console.log("J: " + j);
+				console.log("I: " + i);
+				console.log("CH: " + ch);
+				console.log("CH x: " + ch.boardPosition.x);
+				console.log("CH y: " + ch.boardPosition.y);
+				res[ch.boardPosition.y][ch.boardPosition.x] = ch.getBodyString(i);
 			}
 		}
 	}
@@ -604,7 +591,7 @@ Board.prototype.getGameString = function () {
 		res[k] = "[" + res[k] + "]";
 	}
 
-	return "jogo(" + this.points[this.WHITE] + "," + this.points[this.BLACK] + ",[" + res + "]" + ")";
+	return res;
 };
 
 //Debugs

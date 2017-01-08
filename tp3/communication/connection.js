@@ -27,6 +27,19 @@ function Connection(board,logic,port){
     // Log messages from the server
     Connection.socket.onmessage = function (e) {
         console.log('Server: ' + e.data);
+
+        if(e.data == 'Movimento aceite'){
+            Connection.handleMove();
+        }
+        else if(e.data == 'Captura aceite'){
+            Connection.handleCapture();
+        }
+        else if(e.data == 'Movimento nao aceite' || e.data == 'Celula ocupada' || e.data == 'Captura nao aceite'){
+            Connection.board.selected.body.resetSelection();
+            Connection.board.selected.cell.selected = false;
+            Connection.board.selected.cell = null;
+            Connection.board.selected.body = null;
+        }
     };
 };
 
@@ -34,97 +47,51 @@ Connection.prototype.constructor = Connection;
 
 Connection.prototype.send = function (message) {
 
-    Connection.conn.send(message);
+    Connection.socket.send(message);
 
 };
 
-Connection.handleResponse = function (data) {
+Connection.handleMove = function () {
 
-		var response = new Array();
-
-		response = JSON.parse(data.target.response);
-
-		Connection.logic.handleBotPlay(response);
-};
-
-Connection.handleAC = function (data) {
-  
-    var response = new Array();
-  
-    response = JSON.parse(data.target.response);
-  
-    if(response[0])
-        Connection.board.selected.body.move(Connection.board.selected.cell);
-};
-
-Connection.handleMove = function (data) {
-
-    var response = new Array();
-
-    response = JSON.parse(data.target.response);
-
-    if(response[0])
-        Connection.board.selected.body.move(Connection.board.selected.cell);
+    Connection.board.selected.body.move(Connection.board.selected.cell);
+    Connection.board.endTurn();
 
 };
 
 Connection.handleCapture = function (data) {
 
-    var response = new Array();
+    var checker = Connection.board.selected.body;
+    
+    var startCell = this.board.getCellAt(checker.boardPosition.x, checker.boardPosition.y);
+    var endCell = Connection.board.selected.cell;
+    var middleCell;
 
-    response = JSON.parse(data.target.response);
-
-    if(response[0]){//Indica que sim pode atacar
-
-        var adaptoid = Connection.board.selected.body;
-
-        var enemy = Connection.board.selected.cell.occupied;
-
-        if(adaptoid.getNumClaws() == enemy.getNumClaws()){//Same claws morrem os dois
-            adaptoid.move(null);
-            enemy.move(null);
-            var points = Connection.board.getPoints();
-            Connection.board.setPoints(points.w + 1,points.b + 1);
-        } else if (adaptoid.getNumClaws() > enemy.getNumClaws()){//Ganhou o adaptoid
-            enemy.move(null);
-            adaptoid.move(Connection.board.selected.cell);
-            var points = Connection.board.getPoints();
-            if(adaptoid.team == Connection.board.WHITE){
-                Connection.board.setPoints(points.w + 1,points.b);
-            } else {
-                Connection.board.setPoints(points.w,points.b + 1);
-            }
-        } else{//Ganhou o enemy
-            adaptoid.move(null);
-            var points = Connection.board.getPoints();
-            var points = Connection.board.getPoints();
-            if(adaptoid.team == Connection.board.WHITE){
-                Connection.board.setPoints(points.w,points.b + 1);
-            } else {
-                Connection.board.setPoints(points.w + 1,points.b);
-            }
-        }
+    if(Connection.board.WHITE == Connection.board.playerTurn){
+        if(endCell.boardPosition.x > startCell.boardPosition.x)
+            middleCell = this.board.getCellAt(checker.boardPosition.x + 1,checker.boardPosition.y - 1);
+        else
+            middleCell = this.board.getCellAt(checker.boardPosition.x - 1,checker.boardPosition.y - 1);
     }
-};
+    else{
+        if(endCell.boardPosition.x > startCell.boardPosition.x)
+            middleCell = this.board.getCellAt(checker.boardPosition.x + 1,checker.boardPosition.y + 1);
+        else
+            middleCell = this.board.getCellAt(checker.boardPosition.x - 1,checker.boardPosition.y + 1);
+    }
+    
+    checker.move(Connection.board.selected.cell);
+    
+    var enemy = middleCell.occupied;
+    enemy.move(null);
 
-Connection.handleEvolution = function (data) {
-
-    var response = new Array();
-
-    response = JSON.parse(data.target.response);
-
-    if(response[0])
-        Connection.board.selected.member.storeParent(Connection.board.selected.body2);
-
-};
-
-Connection.faminHandler = function (data) {
-
-    var response = new Array();
-
-    response = JSON.parse(data.target.response);
-
-    Connection.logic.famin(response);
+    var points = Connection.board.getPoints();
+    
+    if(checker.team == Connection.board.WHITE)
+        Connection.board.setPoints(points.w + 1,points.b);
+    else 
+        Connection.board.setPoints(points.w,points.b + 1);
+    
+    Connection.board.endTurn();
 };
 
 Connection.gameOverHandler = function (data) {

@@ -129,16 +129,16 @@ Body.prototype.display = function(){
 		this.selectShader.setUniformsValues({pieceN : 0});
 };
 
-Body.prototype.getBodyString = function (index) {//[ID,Cor,Garras,Pernas]
+Body.prototype.getBodyString = function (index) {
 
 	var res = [];
-	res.push(index);
+	// res.push(index);
 
 	if(this.board.WHITE == this.team){
-		res.push("branco");
+		res.push("W");
 	} else {
-		res.push("preto");
+		res.push("B");
 	}
 		
-	return "[" + res + "]";
+	return res;
 };
