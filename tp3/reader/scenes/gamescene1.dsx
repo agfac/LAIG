@@ -4,10 +4,10 @@
 
   <views default="vista1" >
 
-    <perspective id="vista1" near="0.01" far="100.0" angle="40.0">
-      <from x="0.0" y="5.5" z="4.5" />
-      <to x="0.0" y="0.0" z="-0.0" />
-    </perspective>
+  <perspective id="vista1" near="0.01" far="100.0" angle="40.0">
+    <from x="0.0" y="5.5" z="4.5" />
+    <to x="0.0" y="0.0" z="-0.0" />
+  </perspective>
 
     <perspective id="vista2" near="0.01" far="100.0" angle="40.0">
       <from x="0.0" y="5.0" z="0.0" />
@@ -78,12 +78,16 @@
     <texture id="folha" file="../resources/images/leaf.png" length_s="1.0" length_t="1.0" />
     <texture id="face" file="../resources/images/face1.png" length_s="1.0" length_t="1.0" />
     <texture id="bottom" file="../resources/images/bottom.png" length_s="1.0" length_t="1.0" />
-    <texture id="ceu" file="../resources/images/sky12.png" length_s="1.0" length_t="1.0" />
+    <texture id="ceu" file="../resources/images/sky.jpg" length_s="1.0" length_t="1.0" />
     <texture id="madeira" file="../resources/images/wood1.png" length_s="1.0" length_t="1.0" />
     <texture id="madeiraP" file="../resources/images/wood.png" length_s="1.0" length_t="1.0" />
     <texture id="madeiraA" file="../resources/images/wood2.png" length_s="1.0" length_t="1.0" />
     <texture id="numbers" file="../resources/images/numbers.png" length_s="1.0" length_t="1.0" />
-  </textures>
+    <texture id="texture_chair" file="scenes/textures/chair.jpg" length_s="1.0" length_t="1.0" />
+    <texture id="textura3"  file="scenes/textures/vase.png" length_s="1.0" length_t="1.0" />
+    <texture id="marmore"  file="scenes/textures/marmores.jpg" length_s="1.0" length_t="1.0" />
+
+    </textures>
 
   <materials>
     <material id="material1" >
@@ -159,30 +163,37 @@
       <shininess value="1.0" />
     </material>
 
+    <material id="material_gray" >
+        <emission r="0.1" g="0.1" b="0.1" a="1.0" />
+        <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
+        <diffuse r="0.5" g="0.5" b="0.5" a="1.0" />
+        <specular r="0.5" g="0.5" b="0.5" a="1.0" />
+        <shininess value="0.8" />
+    </material>
   </materials>
 
   <transformations>
 
     <transformation id="movimento1">
       <translate x="0" y="0" z="0" />
-      <scale x="0.2" y="0.2" z="0.2" />
+      <scale x="0.25" y="0.25" z="0.25" />
     </transformation>
 
   </transformations>
 
   <animations>
-   
+
 
   </animations>
 
   <primitives>
 
     <primitive id="plane">
-        <cylinder base="1" top="1" height="2" slices="30" stacks="3" />
+        <cylinder base="1" top="1" height="2" slices="10" stacks="3" />
     </primitive>
 
     <primitive id="planeCell">
-        <cylinder base="0.5" top="0.5" height="2" slices="6" stacks="3" />
+        <cylinder base="0.5" top="0.5" height="2" slices="10" stacks="3" />
     </primitive>
 
     <primitive id="peca">
@@ -228,7 +239,8 @@
       </materials>
       <texture id="inherit" />
       <children>
-        <componentref id="floor" />
+      <componentref id="floor" />
+
       </children>
     </component>
 
@@ -236,13 +248,10 @@
       <transformation>
         <rotate axis="x" angle="90" />
       </transformation>
-
       <materials>
         <material id="material1" />
       </materials>
-
       <texture id="textura1" />
-
       <children>
         <primitiveref id="planeCell"/>
       </children>
@@ -283,7 +292,7 @@
       <materials>
         <material id="white" />
       </materials>
-      <texture id="madeiraA" />
+      <texture id="marmore" />
       <children>
         <primitiveref id="plane"/>
       </children>
@@ -312,8 +321,8 @@
     <player1 material="black" texture="none"/>
     <player2 material="white" texture="none"/>
     <neutral material="grey" texture="none"/>
-    <numbers material="grey" texture="numbers"/>
-    <clock material="white" texture="madeira"/>
+    <numbers material="white" texture="numbers"/>
+    <clock material="white" texture="textura3"/>
   </gamecomponents>
 
 </dsx>
