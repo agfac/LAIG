@@ -45,20 +45,9 @@ Logic.prototype.doMovement = function (action) {
 
 Logic.prototype.playerMovement = function (board,currPlayer) {
 
-	if(!this.board.selected.body.currentCell && !this.board.selected.cell.occupied){//Nao esta em jogo logo é para adicionar corpo e a celula nao esta ocupada
-		this.playerAddBody(board,currPlayer);
+	if(this.board.selected.body.currentCell && !this.board.selected.cell.occupied)
 
-	} else if(this.board.selected.body.currentCell && !this.board.selected.cell.occupied){//Adaptoid placed e a celula desocupada
-
-		this.playerMove(board,currPlayer);
-
-	} else if(this.board.selected.body.currentCell && this.board.selected.cell.occupied){//Ver se o body esta placed e a celula ocupada
-		if(this.board.selected.cell.occupied.team != this.board.selected.body.team){//Celula ocupada e com um inimigo de body
-
-			this.playerCapture(board,currPlayer);
-
-		}
-	}
+		this.playerMove(board,currPlayer); 
 };
 
 Logic.prototype.playerMove = function (board,currPlayer) {
@@ -73,9 +62,4 @@ Logic.prototype.playerMove = function (board,currPlayer) {
 	var request = "mov(" + this.board.getGameString() + ";" + currPlayer + ";" + action + ")";
 	
 	this.board.server.send(request);
-};
-
-Logic.prototype.checkGameEnd = function (board,currPlayer) {
-
-	this.board.server.getPrologRequest("isGameOver(" + this.board.getGameString() + ")",Connection.gameOverHandler);
 };

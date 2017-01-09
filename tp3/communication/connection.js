@@ -93,12 +93,3 @@ Connection.handleCapture = function (data) {
     
     Connection.board.endTurn();
 };
-
-Connection.gameOverHandler = function (data) {
-
-    var response = new Array();
-
-    response = JSON.parse(data.target.response);
-
-    Connection.board.gameOver(response);
-};

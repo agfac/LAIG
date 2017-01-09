@@ -36,9 +36,6 @@ function Board(scene, pieceNumber) {
 	
 	this.dificuldade = "n";
 	
-	this.skip_index = 0;
-	this.move_index = 1;
-
 	this.pieces =  null;
 	
 	this.cells = [];

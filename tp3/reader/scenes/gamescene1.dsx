@@ -71,7 +71,6 @@
     </spot>
   </lights>
 
-
   <textures>
     <texture id="textura1" file="../resources/images/teste.png" length_s="8.0" length_t="1.0" />
     <texture id="textura2" file="../resources/images/checkers.png" length_s="8.0" length_t="0.5" />
