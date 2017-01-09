@@ -145,9 +145,9 @@ Board.prototype.storePlayerTurn = function(turn, time, curr = null){
 
 Board.prototype.setMessage = function () {
 	
-	if((this.points[this.WHITE] >= 5 || this.getCount(this.BLACK) <= 0) && this.scene.animator.animationTime > 3)
+	if((this.points[this.WHITE] >=  12 || this.getCount(this.BLACK) <= 0) && this.scene.animator.animationTime > 3)
 		this.scene.changeHeaderText("White Player Wins!");
-	else if ((this.points[this.BLACK] >= 5 || this.getCount(this.WHITE) <= 0) && this.scene.animator.animationTime > 3){
+	else if ((this.points[this.BLACK] >= 12 || this.getCount(this.WHITE) <= 0) && this.scene.animator.animationTime > 3){
 		console.error("Thats why:" +  this.scene.animator.animationTime);
 		this.scene.changeHeaderText("Black Player Wins!")
 	} else
@@ -205,7 +205,6 @@ Board.prototype.updateTimerValues = function(){
 	
 	this.timer.setTime(time);
 	//console.log("Plr Turn: ["+ this.lastPlayerTurn + "]" + this.playerTurn +" / " + this.currentPlayer + " T2:" + this.playerTurnTime);
-	console.log("MODE: " + this.mode[this.lastPlayerTurn]);
 	if(this.lastPlayerTurn != -1){
 		if(t2 > this.roundTime){
 				this.endTurn();
@@ -284,10 +283,7 @@ Board.prototype.doRound = function(){
 		this.logic.jogadaBot(currPlayer);
 
 	} else {//Jogada Humano
-		console.log("SELECTED BODY: " + this.selected.body);
-		console.log("SELECTED CELL: " + this.selected.cell);
 		if(this.selected.body && this.selected.cell){//Construir comando de movimento
-			console.log("AQUI");
 			this.logic.playerMovement(board,currPlayer);
 		}
 
@@ -452,13 +448,7 @@ Board.prototype.getBodyPosition = function(piece, dist = 0){
 };
 
 Board.prototype.initializePositions = function(){
-	
-	var width = 1;
-	var aSpace = 3* this.half;
-	var bSpace = 2* this.half;
-	var cSpace = 1* this.half;
-	var dSpace = 0;
-	
+		
 	this.board =[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]];	
 	
 	for(var i = 0; i < this.checkers[this.BLACK].length; i ++){
@@ -511,8 +501,8 @@ Board.prototype.clearPicking = function(){
 			
 	for(var i = 0; i < this.pieceNumber; i++){
 
-			this.checkers[this.BLACK][i].setPickID(-1);
-			this.checkers[this.WHITE][i].setPickID(-1);
+		this.checkers[this.BLACK][i].setPickID(-1);
+		this.checkers[this.WHITE][i].setPickID(-1);
 	}
 };
 
@@ -525,8 +515,7 @@ Board.prototype.registerPicking = function(){
 	
 	for(var i = 0; i < this.pieceNumber; i++){
 
-		if(i < this.pieceNumber)
-			this.checkers[this.playerTurn][i].setPickID(idC);
+		this.checkers[this.playerTurn][i].setPickID(idC);
 
 		idC++;
 	}
@@ -535,24 +524,24 @@ Board.prototype.registerPicking = function(){
 Board.prototype.display = function(){
 	
 	this.scene.pushMatrix();
-	this.clock.display();
-	this.bell.display();
-	this.timer.display();
-	this.score.display();
-	this.scene.translate( 0, 0.2, 0);
+		this.clock.display();
+		this.bell.display();
+		this.timer.display();
+		this.score.display();
+		this.scene.translate( 0, 0.2, 0);
 
-	if(this.pieces != null){
-		
-		for(var y = 0; y < this.cells.length; y++)
-			this.cells[y].display();
+		if(this.pieces != null){
+			
+			for(var y = 0; y < this.cells.length; y++)
+				this.cells[y].display();
 
-		for(var x = 0; x < this.pieceNumber; x++){
-		
-			if(x < this.checkers[0].length){
-				this.checkers[this.BLACK][x].display();
-				this.checkers[this.WHITE][x].display();
-			}
-	}
+			for(var x = 0; x < this.pieceNumber; x++){
+			
+				if(x < this.checkers[0].length){
+					this.checkers[this.BLACK][x].display();
+					this.checkers[this.WHITE][x].display();
+				}
+		}
 
 	this.scene.popMatrix();
 	
@@ -577,11 +566,6 @@ Board.prototype.getGameString = function () {
 		for(var i = 0; i < this.checkers[j].length; i++){
 			if(this.checkers[j][i].currentCell){
 				var ch = this.checkers[j][i];
-				console.log("J: " + j);
-				console.log("I: " + i);
-				console.log("CH: " + ch);
-				console.log("CH x: " + ch.boardPosition.x);
-				console.log("CH y: " + ch.boardPosition.y);
 				res[ch.boardPosition.y][ch.boardPosition.x] = ch.getBodyString(i);
 			}
 		}
@@ -592,17 +576,4 @@ Board.prototype.getGameString = function () {
 	}
 
 	return res;
-};
-
-//Debugs
-Board.prototype.debugCells = function(){
-	console.log(this.cells);
-};
-
-Board.prototype.debugBodys = function(){
-	console.log(this.adaptoids);
-};
-
-Board.prototype.debugMembers = function(){
-	console.log(this.members);
 };

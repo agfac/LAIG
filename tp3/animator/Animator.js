@@ -51,7 +51,7 @@ Animator.prototype.addUndoListener = function(listener){
 };
 
 Animator.prototype.undo = function(){
-
+	
 	for(var i = 0; i < this.listeners.length; i++)
 		this.listeners[i].onUndo();
 	
@@ -63,7 +63,7 @@ Animator.prototype.togglePlay = function(){
 
 	this.play = !this.play;
 	this.playBtn.name((this.play)? "Stop" : "Play");
-	
+
 //	this.playBtn.updateDisplay();
 
 	console.log(this.playBtn);
